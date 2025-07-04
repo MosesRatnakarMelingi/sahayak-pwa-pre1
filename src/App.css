@@ -1,0 +1,484 @@
+/* General Body and Layout */
+body {
+  margin: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f0f2f5; /* Light gray background */
+  color: #333;
+  line-height: 1.6;
+}
+
+.app-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  width: 100%;
+  max-width: 1200px; /* Max width for content */
+  margin: 0 auto;
+  background-color: #fff; /* White background for the main app area */
+  box-shadow: 0 0 15px rgba(0,0,0,0.05);
+}
+
+/* Header Styling */
+.app-header {
+  background-color: #4A90E2; /* Blue header */
+  color: white;
+  padding: 20px 30px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  flex-wrap: wrap; /* Allow wrapping on smaller screens */
+}
+
+.app-title {
+  margin: 0;
+  font-size: 2.2rem;
+  font-weight: 700;
+}
+
+.header-controls {
+  display: flex;
+  align-items: center;
+  gap: 15px; /* Space between elements */
+  flex-wrap: wrap;
+  justify-content: flex-end; /* Align to right */
+}
+
+.welcome-text {
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+/* Buttons - General Styling */
+.button-primary {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  font-weight: 600;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.button-primary:hover:not(:disabled) {
+  transform: translateY(-2px);
+}
+
+.button-blue {
+  background-color: #007bff;
+  color: white;
+}
+
+.button-blue:hover:not(:disabled) {
+  background-color: #0056b3;
+}
+
+.button-red {
+  background-color: #dc3545;
+  color: white;
+}
+
+.button-red:hover:not(:disabled) {
+  background-color: #c82333;
+}
+
+.button-green {
+  background-color: #28a745;
+  color: white;
+}
+
+.button-green:hover:not(:disabled) {
+  background-color: #218838;
+}
+
+.button-secondary {
+  background-color: #6c757d;
+  color: white;
+}
+
+.button-secondary:hover:not(:disabled) {
+  background-color: #5a6268;
+}
+
+.button-primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+/* Main Content Area */
+.main-content {
+  flex-grow: 1;
+  padding: 30px;
+  background-color: #ffffff;
+  border-radius: 0 0 10px 10px;
+}
+
+.signin-message {
+  text-align: center;
+  font-size: 1.2rem;
+  color: #555;
+  margin-top: 50px;
+}
+
+/* Dashboard View */
+.dashboard-view {
+  text-align: center;
+  padding: 20px 0;
+}
+
+.dashboard-title {
+  font-size: 1.8rem;
+  color: #333;
+  margin-bottom: 30px;
+}
+
+.feature-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 25px;
+  justify-content: center;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.feature-card {
+  background-color: #4A90E2; /* Blue background for cards */
+  color: white;
+  padding: 30px;
+  border-radius: 12px;
+  text-align: center;
+  cursor: pointer;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
+  border: none; /* Remove default button border */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 180px; /* Ensure consistent height */
+}
+
+.feature-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+  background-color: #357ABD; /* Slightly darker blue on hover */
+}
+
+.feature-card-icon {
+  font-size: 3rem;
+  margin-bottom: 15px;
+}
+
+.feature-card h3 {
+  font-size: 1.5rem;
+  margin-bottom: 10px;
+}
+
+.feature-card p {
+  font-size: 0.95rem;
+  opacity: 0.9;
+}
+
+/* Feature View (Ask Me Anything/Storyfy) */
+.feature-view-container {
+  padding: 20px;
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+}
+
+.back-button {
+  background: none;
+  border: none;
+  color: #007bff;
+  font-size: 1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+  padding: 5px 0;
+  transition: color 0.2s ease;
+}
+
+.back-button:hover {
+  color: #0056b3;
+}
+
+.back-button span {
+  font-size: 1.2rem;
+  margin-right: 8px;
+}
+
+.feature-view-title {
+  font-size: 2rem;
+  color: #333;
+  margin-bottom: 25px;
+  text-align: center;
+}
+
+.text-input {
+  width: calc(100% - 20px); /* Adjust for padding/button */
+  min-height: 120px;
+  padding: 15px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 1rem;
+  resize: vertical; /* Allow vertical resizing */
+  box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
+  transition: border-color 0.2s ease;
+}
+
+.text-input:focus {
+  border-color: #4A90E2;
+  outline: none;
+}
+
+.button-group {
+  display: flex;
+  gap: 15px;
+  margin-top: 20px;
+  justify-content: center;
+}
+
+.ai-response-container {
+  background-color: #e9f7ff; /* Light blue background for response */
+  border: 1px solid #cceeff;
+  border-radius: 8px;
+  padding: 20px;
+  margin-top: 30px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.ai-response-container h3 {
+  font-size: 1.4rem;
+  color: #0056b3;
+  margin-top: 0;
+  margin-bottom: 15px;
+  display: flex; /* To align icons with text */
+  align-items: center;
+}
+
+.ai-response-container p {
+  font-size: 1.1rem;
+  color: #333;
+  white-space: pre-wrap; /* Preserve whitespace and line breaks */
+}
+
+/* Language Dropdown */
+.language-dropdown-container {
+  position: relative;
+}
+
+.language-dropdown-button {
+  background-color: #fff;
+  color: #4A90E2;
+  border: 1px solid #4A90E2;
+  padding: 8px 15px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  transition: background-color 0.2s ease, color 0.2s ease;
+  font-weight: 500;
+}
+
+.language-dropdown-button:hover {
+  background-color: #e6f2ff;
+  color: #357ABD;
+}
+
+.language-dropdown-menu {
+  position: absolute;
+  top: 100%; /* Position below the button */
+  right: 0;
+  background-color: white;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  z-index: 100; /* Ensure it's on top */
+  min-width: 150px;
+  padding: 5px 0;
+  margin-top: 5px; /* Small gap below button */
+}
+
+.language-dropdown-menu button {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 10px 15px;
+  border: none;
+  background: none;
+  text-align: left;
+  cursor: pointer;
+  font-size: 1rem;
+  color: #333;
+  transition: background-color 0.2s ease;
+}
+
+.language-dropdown-menu button:hover {
+  background-color: #f0f0f0;
+}
+
+.language-dropdown-menu button.selected {
+  background-color: #e6f2ff;
+  font-weight: 600;
+  color: #4A90E2;
+}
+
+/* Language Setup Modal (First-time sign-in) */
+.language-setup-modal {
+  background-color: white;
+  padding: 40px;
+  border-radius: 12px;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+  text-align: center;
+  max-width: 600px;
+  width: 90%;
+  position: relative;
+}
+
+.language-setup-modal h2 {
+  margin-top: 0;
+  margin-bottom: 30px;
+  color: #333;
+  font-size: 1.8rem;
+}
+
+.language-options-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 15px;
+  justify-content: center;
+}
+
+.language-setup-modal button {
+  background-color: #f0f2f5;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 15px;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease, border-color 0.3s ease, transform 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 90px;
+}
+
+.language-setup-modal button:hover {
+  background-color: #e0e5ea;
+  border-color: #4A90E2;
+  transform: translateY(-2px);
+}
+
+.language-setup-modal-icon {
+  font-size: 2rem;
+  margin-bottom: 5px;
+}
+
+/* Styles for Voice Input/Output - Enhanced for Modern Look */
+.input-with-voice-button {
+  position: relative;
+  width: 100%;
+  margin-bottom: 25px;
+}
+
+.voice-input-button {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: #f0f0f0; /* Light gray */
+  border: 1px solid #ddd; /* Subtle border */
+  border-radius: 50%; /* Make it perfectly round */
+  width: 50px; /* Slightly larger button */
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.8rem; /* Icon size - slightly larger */
+  cursor: pointer;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1); /* More prominent shadow */
+  transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+  z-index: 5;
+  color: #4A90E2; /* Blue color for the icon */
+}
+
+.voice-input-button:hover:not(:disabled) {
+  background-color: #e6e6e6; /* Darker gray on hover */
+  transform: translateY(-50%) scale(1.08); /* Slightly more prominent scale */
+  box-shadow: 0 6px 12px rgba(0,0,0,0.15); /* Enhanced shadow on hover */
+}
+
+.voice-input-button.listening {
+  background-color: #ffcccc;
+  border-color: #ff6666;
+  box-shadow: 0 0 0 5px rgba(255, 102, 102, 0.3);
+  animation: pulse 1.5s infinite;
+  color: #dc3545; /* Red color for the icon when listening */
+}
+
+.voice-input-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.5; /* More faded when disabled */
+  box-shadow: none;
+}
+
+.speak-button,
+.copy-button {
+  background-color: #ffffff; /* White background for icons */
+  border: 1px solid #ddd;
+  font-size: 1.6rem; /* Slightly larger icons */
+  cursor: pointer;
+  margin-left: 10px;
+  vertical-align: middle;
+  transition: transform 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
+  padding: 8px 12px; /* More padding for better click area */
+  border-radius: 8px; /* Slightly rounded rectangular shape */
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  color: #6c757d; /* Dark gray for general icons */
+}
+
+.speak-button:hover,
+.copy-button:hover {
+  transform: translateY(-2px); /* Lift slightly on hover */
+  background-color: #f0f0f0;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+.speak-button {
+    color: #007bff; /* Blue for the speaker icon */
+}
+.copy-button {
+    color: #28a745; /* Green for the copy icon */
+}
+
+/* Animation for listening state */
+@keyframes pulse {
+  0% { box-shadow: 0 0 0 0 rgba(255, 102, 102, 0.3); }
+  70% { box-shadow: 0 0 0 10px rgba(255, 102, 102, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(255, 102, 102, 0); }
+}
+
+/* Loading Spinner */
+.spinner {
+  border: 4px solid rgba(255, 255, 255, 0.3);
+  border-top: 4px solid #ffffff;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  animation: spin 1s linear infinite;
+  display: inline-block;
+  vertical-align: middle;
+  margin-right: 8px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
