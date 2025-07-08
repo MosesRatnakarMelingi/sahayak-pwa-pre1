@@ -1,10 +1,15 @@
 /* General Body and Layout */
-body {
+body, html, #root {
   margin: 0;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background-color: #f0f2f5; /* Light gray background */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: #f0f2f5; /* Light gray background from provided CSS */
   color: #333;
   line-height: 1.6;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 
 .app-container {
@@ -12,22 +17,19 @@ body {
   flex-direction: column;
   min-height: 100vh;
   width: 100%;
-  max-width: 1200px; /* Max width for content */
-  margin: 0 auto;
-  background-color: #fff; /* White background for the main app area */
-  box-shadow: 0 0 15px rgba(0,0,0,0.05);
 }
 
-/* Header Styling */
+/* Header Styling - Adopted from provided CSS, with enhanced shadow */
 .app-header {
-  background-color: #4A90E2; /* Blue header */
+  background-color: #4A90E2; /* Blue header from provided CSS */
   color: white;
   padding: 20px 30px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-  flex-wrap: wrap; /* Allow wrapping on smaller screens */
+  box-shadow: 0 4px 15px rgba(0,0,0,0.2); /* Enhanced shadow */
+  z-index: 10;
+  flex-wrap: wrap;
 }
 
 .app-title {
@@ -39,17 +41,18 @@ body {
 .header-controls {
   display: flex;
   align-items: center;
-  gap: 15px; /* Space between elements */
+  gap: 15px;
   flex-wrap: wrap;
-  justify-content: flex-end; /* Align to right */
+  justify-content: flex-end;
 }
 
 .welcome-text {
   font-size: 1rem;
   font-weight: 500;
+  white-space: nowrap;
 }
 
-/* Buttons - General Styling */
+/* Buttons - General Styling - Adopted from provided CSS */
 .button-primary {
   padding: 10px 20px;
   border: none;
@@ -59,6 +62,7 @@ body {
   transition: background-color 0.3s ease, transform 0.2s ease;
   font-weight: 600;
   box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  white-space: nowrap;
 }
 
 .button-primary:hover:not(:disabled) {
@@ -69,7 +73,6 @@ body {
   background-color: #007bff;
   color: white;
 }
-
 .button-blue:hover:not(:disabled) {
   background-color: #0056b3;
 }
@@ -78,7 +81,6 @@ body {
   background-color: #dc3545;
   color: white;
 }
-
 .button-red:hover:not(:disabled) {
   background-color: #c82333;
 }
@@ -87,7 +89,6 @@ body {
   background-color: #28a745;
   color: white;
 }
-
 .button-green:hover:not(:disabled) {
   background-color: #218838;
 }
@@ -96,7 +97,6 @@ body {
   background-color: #6c757d;
   color: white;
 }
-
 .button-secondary:hover:not(:disabled) {
   background-color: #5a6268;
 }
@@ -107,166 +107,7 @@ body {
   box-shadow: none;
 }
 
-/* Main Content Area */
-.main-content {
-  flex-grow: 1;
-  padding: 30px;
-  background-color: #ffffff;
-  border-radius: 0 0 10px 10px;
-}
-
-.signin-message {
-  text-align: center;
-  font-size: 1.2rem;
-  color: #555;
-  margin-top: 50px;
-}
-
-/* Dashboard View */
-.dashboard-view {
-  text-align: center;
-  padding: 20px 0;
-}
-
-.dashboard-title {
-  font-size: 1.8rem;
-  color: #333;
-  margin-bottom: 30px;
-}
-
-.feature-cards-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 25px;
-  justify-content: center;
-  max-width: 900px;
-  margin: 0 auto;
-}
-
-.feature-card {
-  background-color: #4A90E2; /* Blue background for cards */
-  color: white;
-  padding: 30px;
-  border-radius: 12px;
-  text-align: center;
-  cursor: pointer;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-  transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
-  border: none; /* Remove default button border */
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  min-height: 180px; /* Ensure consistent height */
-}
-
-.feature-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 6px 20px rgba(0,0,0,0.15);
-  background-color: #357ABD; /* Slightly darker blue on hover */
-}
-
-.feature-card-icon {
-  font-size: 3rem;
-  margin-bottom: 15px;
-}
-
-.feature-card h3 {
-  font-size: 1.5rem;
-  margin-bottom: 10px;
-}
-
-.feature-card p {
-  font-size: 0.95rem;
-  opacity: 0.9;
-}
-
-/* Feature View (Ask Me Anything/Storyfy) */
-.feature-view-container {
-  padding: 20px;
-  background-color: #ffffff;
-  border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-}
-
-.back-button {
-  background: none;
-  border: none;
-  color: #007bff;
-  font-size: 1rem;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  margin-bottom: 20px;
-  padding: 5px 0;
-  transition: color 0.2s ease;
-}
-
-.back-button:hover {
-  color: #0056b3;
-}
-
-.back-button span {
-  font-size: 1.2rem;
-  margin-right: 8px;
-}
-
-.feature-view-title {
-  font-size: 2rem;
-  color: #333;
-  margin-bottom: 25px;
-  text-align: center;
-}
-
-.text-input {
-  width: calc(100% - 20px); /* Adjust for padding/button */
-  min-height: 120px;
-  padding: 15px;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  font-size: 1rem;
-  resize: vertical; /* Allow vertical resizing */
-  box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
-  transition: border-color 0.2s ease;
-}
-
-.text-input:focus {
-  border-color: #4A90E2;
-  outline: none;
-}
-
-.button-group {
-  display: flex;
-  gap: 15px;
-  margin-top: 20px;
-  justify-content: center;
-}
-
-.ai-response-container {
-  background-color: #e9f7ff; /* Light blue background for response */
-  border: 1px solid #cceeff;
-  border-radius: 8px;
-  padding: 20px;
-  margin-top: 30px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-}
-
-.ai-response-container h3 {
-  font-size: 1.4rem;
-  color: #0056b3;
-  margin-top: 0;
-  margin-bottom: 15px;
-  display: flex; /* To align icons with text */
-  align-items: center;
-}
-
-.ai-response-container p {
-  font-size: 1.1rem;
-  color: #333;
-  white-space: pre-wrap; /* Preserve whitespace and line breaks */
-}
-
-/* Language Dropdown */
+/* Language Dropdown - Adopted from provided CSS */
 .language-dropdown-container {
   position: relative;
 }
@@ -293,16 +134,18 @@ body {
 
 .language-dropdown-menu {
   position: absolute;
-  top: 100%; /* Position below the button */
+  top: 100%;
   right: 0;
   background-color: white;
   border: 1px solid #ddd;
   border-radius: 8px;
   box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-  z-index: 100; /* Ensure it's on top */
-  min-width: 150px;
+  margin-top: 5px;
   padding: 5px 0;
-  margin-top: 5px; /* Small gap below button */
+  min-width: 150px;
+  max-height: 250px;
+  overflow-y: auto;
+  z-index: 20;
 }
 
 .language-dropdown-menu button {
@@ -310,13 +153,13 @@ body {
   align-items: center;
   width: 100%;
   padding: 10px 15px;
-  border: none;
   background: none;
+  border: none;
   text-align: left;
   cursor: pointer;
   font-size: 1rem;
   color: #333;
-  transition: background-color 0.2s ease;
+  transition: background-color 0.15s ease;
 }
 
 .language-dropdown-menu button:hover {
@@ -329,7 +172,26 @@ body {
   color: #4A90E2;
 }
 
-/* Language Setup Modal (First-time sign-in) */
+/* Main Content Area - Adopted from provided CSS */
+.main-content {
+  flex-grow: 1;
+  padding: 30px;
+  background-color: #ffffff;
+  border-radius: 0 0 10px 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.signin-message {
+  text-align: center;
+  font-size: 1.2rem;
+  color: #555;
+  margin-top: 50px;
+}
+
+/* Language Setup Modal - Adopted from provided CSS */
 .language-setup-modal {
   background-color: white;
   padding: 40px;
@@ -381,94 +243,154 @@ body {
   margin-bottom: 5px;
 }
 
-/* Styles for Voice Input/Output - Enhanced for Modern Look */
-.input-with-voice-button {
-  position: relative;
+
+/* Dashboard View - Adopted from provided CSS */
+.dashboard-view {
   width: 100%;
-  margin-bottom: 25px;
+  max-width: 900px;
+  margin: 20px auto;
+  padding: 0 15px;
+  box-sizing: border-box;
+  text-align: center;
 }
 
-.voice-input-button {
-  position: absolute;
-  right: 10px;
-  top: 50%;
-  transform: translateY(-50%);
-  background-color: #f0f0f0; /* Light gray */
-  border: 1px solid #ddd; /* Subtle border */
-  border-radius: 50%; /* Make it perfectly round */
-  width: 50px; /* Slightly larger button */
-  height: 50px;
+.dashboard-title {
+  font-size: 1.8rem;
+  color: #333;
+  margin-bottom: 30px;
+  text-align: center;
+  font-weight: 600;
+}
+
+.feature-cards-grid {
+  display: grid;
+  gap: 25px; /* Adopted from provided CSS */
+  justify-content: center;
+  margin: 0 auto;
+  padding: 0;
+}
+
+/* Feature Card - Adopted from provided CSS for blue theme */
+.feature-card {
+  background-color: #4A90E2; /* Blue background for cards - FROM PROVIDED CSS */
+  color: white; /* Text color for cards - FROM PROVIDED CSS */
+  padding: 30px; /* Adopted from provided CSS */
+  border-radius: 12px;
+  text-align: center;
+  cursor: pointer;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
+  border: none;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  font-size: 1.8rem; /* Icon size - slightly larger */
+  min-height: 180px; /* Adopted from provided CSS */
+}
+
+.feature-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+  background-color: #357ABD; /* Slightly darker blue on hover */
+}
+
+.feature-card-icon {
+  font-size: 3rem;
+  margin-bottom: 15px;
+}
+
+.feature-card h3 {
+  font-size: 1.5rem;
+  margin-bottom: 10px;
+  color: inherit; /* Inherit color from .feature-card (which is white) */
+  font-weight: 600;
+}
+
+.feature-card p {
+  font-size: 0.95rem;
+  opacity: 0.9;
+  color: inherit; /* Inherit color from .feature-card (which is white) */
+  line-height: 1.4;
+}
+
+
+/* Feature View Styling - NO CHANGES HERE, keeping previous good changes */
+.feature-view-container {
+  width: 100%;
+  max-width: 800px;
+  margin: 20px auto;
+  padding: 0 15px;
+  box-sizing: border-box;
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  padding: 30px;
+}
+
+.back-button {
+  background: none;
+  border: none;
+  color: #1a73e8;
+  font-size: 1em;
+  display: flex;
+  align-items: center;
   cursor: pointer;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.1); /* More prominent shadow */
-  transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
-  z-index: 5;
-  color: #4A90E2; /* Blue color for the icon */
+  margin-bottom: 20px;
+  padding: 5px 0;
+  transition: color 0.2s ease;
 }
 
-.voice-input-button:hover:not(:disabled) {
-  background-color: #e6e6e6; /* Darker gray on hover */
-  transform: translateY(-50%) scale(1.08); /* Slightly more prominent scale */
-  box-shadow: 0 6px 12px rgba(0,0,0,0.15); /* Enhanced shadow on hover */
+.back-button:hover {
+  color: #1565c0;
 }
 
-.voice-input-button.listening {
-  background-color: #ffcccc;
-  border-color: #ff6666;
-  box-shadow: 0 0 0 5px rgba(255, 102, 102, 0.3);
-  animation: pulse 1.5s infinite;
-  color: #dc3545; /* Red color for the icon when listening */
+.back-button span {
+  margin-right: 8px;
+  font-size: 1.2em;
 }
 
-.voice-input-button:disabled {
-  cursor: not-allowed;
-  opacity: 0.5; /* More faded when disabled */
-  box-shadow: none;
+.feature-view-title {
+  text-align: center;
+  color: #1a73e8;
+  margin-bottom: 25px;
+  font-size: 2em;
+  font-weight: 600;
 }
 
-.speak-button,
-.copy-button {
-  background-color: #ffffff; /* White background for icons */
-  border: 1px solid #ddd;
-  font-size: 1.6rem; /* Slightly larger icons */
-  cursor: pointer;
-  margin-left: 10px;
-  vertical-align: middle;
-  transition: transform 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
-  padding: 8px 12px; /* More padding for better click area */
-  border-radius: 8px; /* Slightly rounded rectangular shape */
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-  color: #6c757d; /* Dark gray for general icons */
+.input-field-container {
+  margin-bottom: 20px;
 }
 
-.speak-button:hover,
-.copy-button:hover {
-  transform: translateY(-2px); /* Lift slightly on hover */
-  background-color: #f0f0f0;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+.text-input {
+  width: 100%;
+  min-height: 120px;
+  padding: 15px;
+  border: 1px solid #dadce0;
+  border-radius: 8px;
+  font-size: 1em;
+  color: #3c4043;
+  box-sizing: border-box;
+  resize: vertical;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
-.speak-button {
-    color: #007bff; /* Blue for the speaker icon */
-}
-.copy-button {
-    color: #28a745; /* Green for the copy icon */
-}
-
-/* Animation for listening state */
-@keyframes pulse {
-  0% { box-shadow: 0 0 0 0 rgba(255, 102, 102, 0.3); }
-  70% { box-shadow: 0 0 0 10px rgba(255, 102, 102, 0); }
-  100% { box-shadow: 0 0 0 0 rgba(255, 102, 102, 0); }
+.text-input:focus {
+  outline: none;
+  border-color: #1a73e8;
+  box-shadow: 0 0 0 3px rgba(26, 115, 232, 0.2);
 }
 
-/* Loading Spinner */
+.button-group {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+  margin-top: 20px;
+  flex-wrap: wrap;
+}
+
 .spinner {
-  border: 4px solid rgba(255, 255, 255, 0.3);
-  border-top: 4px solid #ffffff;
+  border: 3px solid #f3f3f3;
+  border-top: 3px solid #1a73e8;
   border-radius: 50%;
   width: 20px;
   height: 20px;
@@ -481,4 +403,180 @@ body {
 @keyframes spin {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
+}
+
+.ai-response-container {
+  background-color: #f8f9fa;
+  padding: 20px;
+  border-radius: 8px;
+  border: 1px solid #e0e0e0;
+  margin-top: 20px;
+}
+
+.ai-response-container h3 {
+  color: #1a73e8;
+  margin-top: 0;
+  margin-bottom: 15px;
+  font-size: 1.3em;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.ai-response-container p {
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  line-height: 1.6;
+  color: #333;
+}
+
+.copy-button {
+  background: none;
+  border: none;
+  font-size: 1.3em;
+  cursor: pointer;
+  color: #777;
+  transition: color 0.2s ease;
+  padding: 5px;
+  margin-left: 10px;
+}
+
+.copy-button:hover {
+  color: #1a73e8;
+}
+
+/* Under Development Message - Retained */
+.under-development-message {
+    background-color: #fff3cd;
+    border: 1px solid #ffeeba;
+    border-radius: 8px;
+    padding: 20px;
+    margin-top: 20px;
+    text-align: center;
+    color: #856404;
+    font-size: 1.1em;
+}
+
+/* Responsive adjustments for Header and Controls */
+@media (max-width: 768px) {
+  .app-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .header-controls {
+    width: 100%;
+    justify-content: space-between;
+    margin-top: 10px;
+  }
+
+  .app-title {
+    font-size: 1.8rem;
+  }
+
+  .welcome-text,
+  .language-dropdown-button,
+  .button-primary {
+    font-size: 0.9em;
+    padding: 8px 15px;
+  }
+
+  .feature-view-container {
+    padding: 20px;
+  }
+
+  .feature-view-title {
+    font-size: 1.8em;
+  }
+
+  .text-input {
+    min-height: 100px;
+  }
+
+  .button-group {
+    flex-direction: column;
+    gap: 10px;
+  }
+}
+
+/* Specific adjustments for Feature Cards for mobile-friendliness */
+
+/* Phones (below 480px) - Single column, more compact cards */
+@media (max-width: 479px) {
+  .feature-cards-grid {
+    grid-template-columns: 1fr; /* Single column */
+    gap: 15px; /* Slightly reduced gap */
+  }
+
+  .feature-card {
+    padding: 20px; /* Reduced padding */
+    min-height: 150px; /* Reduced min-height */
+  }
+
+  .feature-card-icon {
+    font-size: 2.5rem; /* Smaller icon */
+    margin-bottom: 10px; /* Reduced margin */
+  }
+
+  .feature-card h3 {
+    font-size: 1.3rem; /* Smaller heading */
+    margin-bottom: 5px; /* Reduced margin */
+  }
+
+  .feature-card p {
+    font-size: 0.85rem; /* Smaller paragraph text */
+  }
+
+  .dashboard-title {
+    font-size: 1.5rem;
+  }
+}
+
+/* Larger Phones & Small Tablets (480px to 599px) - Two columns */
+@media (min-width: 480px) and (max-width: 599px) {
+  .feature-cards-grid {
+    grid-template-columns: repeat(2, 1fr); /* Two columns */
+    gap: 20px; /* Moderate gap */
+  }
+
+  .feature-card {
+    padding: 25px; /* Moderate padding */
+    min-height: 160px; /* Moderate min-height */
+  }
+
+  .feature-card-icon {
+    font-size: 2.8rem; /* Moderate icon size */
+    margin-bottom: 12px; /* Moderate margin */
+  }
+
+  .feature-card h3 {
+    font-size: 1.4rem; /* Moderate heading size */
+    margin-bottom: 8px; /* Moderate margin */
+  }
+
+  .feature-card p {
+    font-size: 0.9rem; /* Moderate paragraph text */
+  }
+}
+
+/* Tablet (600px and up) - Existing rules for 2+ columns */
+@media (min-width: 600px) {
+  .feature-cards-grid {
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  }
+}
+
+/* Desktop (900px and up) - Existing rules for 3 columns */
+@media (min-width: 900px) {
+  .feature-cards-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* Larger Desktop (1200px and up) - Existing rules for 4 columns */
+@media (min-width: 1200px) {
+    .feature-cards-grid {
+        grid-template-columns: repeat(4, 1fr);
+    }
 }
