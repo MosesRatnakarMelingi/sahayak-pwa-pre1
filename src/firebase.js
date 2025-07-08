@@ -1,11 +1,10 @@
-// Import the functions you need from the SDKs you need
+// src/firebase.js
 import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
-// New imports for AI Logic
-import { getAI, GoogleAIBackend } from "firebase/ai";
+import { getFirestore } from "firebase/firestore"; // <-- NEW: Import getFirestore
+// import { getAI, GoogleAIBackend } from "firebase/ai"; // <-- Keep or remove if not used for Gemini AI directly
 
 // Your web app's Firebase configuration
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
   apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
   authDomain: process.env.REACT_APP_FIREBASE_AUTH_DOMAIN,
@@ -22,10 +21,13 @@ const app = initializeApp(firebaseConfig);
 // Initialize Firebase Authentication and get a reference to the service
 const auth = getAuth(app);
 
-// Initialize Firebase AI Logic
-const ai = getAI(app, {
-  // It's crucial to specify the backend here for image generation
-  backend: new GoogleAIBackend()
-});
+// Initialize Firebase Firestore and get a reference to the service <-- NEW: Firestore
+const db = getFirestore(app);
 
-export { auth, ai }; // Export 'ai' as well
+// Initialize Firebase AI Logic (keep if you still use it for other Firebase AI services, otherwise you can remove this block)
+// const ai = getAI(app, {
+//   backend: new GoogleAIBackend()
+// });
+
+// Export both auth and db (and ai if you keep it)
+export { auth, db }; // <-- UPDATED: Export db

@@ -13,15 +13,12 @@ function App() {
   const [currentView, setCurrentView] = useState('dashboard');
 
   // Language States
-  const [selectedLanguage, setSelectedLanguage] = useState('English');
+  const [selectedLanguage, setSelectedLanguage] = useState(() => {
+    return localStorage.getItem('userLanguage') || 'English';
+  });
   const [showLanguageSetup, setShowLanguageSetup] = useState(false);
   const [showLanguageDropdown, setShowLanguageDropdown] = useState(false);
   const languageDropdownRef = useRef(null);
-
-  // Speech recognition states
-  const [isListening, setIsListening] = useState(false);
-  const recognitionRef = useRef(null);
-  const [triggerVoiceOutput, setTriggerVoiceOutput] = useState(false);
 
   const languageOptions = [
     { id: 'english', name: 'English', icon: '🇬🇧', langCode: 'en-US' },
@@ -75,29 +72,29 @@ function App() {
     'తెలుగు': {
       'askMeAnything': {
         name: 'ఏదైనా అడగండి',
-        description: 'సాధారణ ప్రశ్నలకు లేదా స్థానిక వాస్తవాలకు (భారతదేశం-కేంద్రీకృత) సమాధానాలు పొందండి.'
+        description: 'సాధారణ ప్రశ్నలకు లేదా స్థానిక వాస్తవాలకు (భారతదేశం-కేంద్రీకృత) సమాధానాలు పొందండి।'
       },
       'storyfy': {
         name: 'కథలుగా మార్చండి',
-        description: 'పిల్లల కోసం భావనలను కథలుగా సులభంగా వివరించండి.'
+        description: 'పిల్లల కోసం భావనలను కథలుగా సులభంగా వివరించండి।'
       },
       'instantKnowledgeBase': {
         name: 'సులభంగా వివరించండి',
-        description: 'సులభమైన పోలికలతో సంక్షిప్త, సాధారణ వివరణలను పొందండి.'
+        description: 'సులభమైన పోలికలతో సంక్షిప్త, సాధారణ వివరణలను పొందండి।'
       }
     },
     'தமிழ்': {
       'askMeAnything': {
         name: 'எதுவும் கேளுங்கள்',
-        description: 'பொதுவான கேள்விகள் அல்லது உள்ளூர் தகவல்களை (இந்தியா சார்ந்தது) பெறுங்கள்.'
+        description: 'பொதுவான கேள்விகள் அல்லது உள்ளூர் தகவல்களை (இந்தியா சார்ந்தது) பெறுங்கள்।'
       },
       'storyfy': {
         name: 'கதையாக்குங்கள்',
-        description: 'குழந்தைகளுக்கான கதைகளாக கருத்துக்களை எளிமையாக விளக்குங்கள்.'
+        description: 'குழந்தைகளுக்கான கதைகளாக கருத்துக்களை எளிமையாக விளக்குங்கள்।'
       },
       'instantKnowledgeBase': {
         name: 'எளிமையாக விளக்கு',
-        description: 'எளிதான ஒப்புமைகளுடன் சுருக்கமான, எளிய விளக்கங்களைப் பெறுங்கள்.'
+        description: 'எளிதான ஒப்புமைகளுடன் சுருக்கமான, எளிய விளக்கங்களைப் பெறுங்கள்।'
       }
     },
     'ಕನ್ನಡ': {
@@ -111,7 +108,7 @@ function App() {
       },
       'instantKnowledgeBase': {
         name: 'ಸರಳವಾಗಿ ವಿವರಿಸಿ',
-        description: 'ಸುಲಭ ಹೋಲಿಕೆಗಳೊಂದಿಗೆ ಸಂಕ್ಷಿಪ್ತ, ಸರಳ ವಿವರಣೆಗಳನ್ನು ಪಡೆಯಿರಿ.'
+        description: 'ಸುಲಭ ಹೋಲಿಕೆಗಳೊಂದಿಗೆ ಸಂಕ್ಷಿಪ್ತ, ಸರಳ ವಿವರಣೆಗಳನ್ನು ಪಡೆಯಿರಿ।'
       }
     },
     'മലയാളം': {
@@ -125,7 +122,7 @@ function App() {
       },
       'instantKnowledgeBase': {
         name: 'ലളിതമായി വിശദീകരിക്കുക',
-        description: 'ലളിതമായ സാമ്യങ്ങളോടുകൂടിയ സംക്ഷിപ്തവും ലളിതവുമായ വിശദീകരണങ്ങൾ നേടുക.'
+        description: 'ലളിതമായ സാമ്യങ്ങളോടുകൂടിയ സംക്ഷിപ്തവും ലളിതവുമായ വിശദീകരണങ്ങൾ നേടുക।'
       }
     },
     'বাংলা': {
@@ -153,7 +150,7 @@ function App() {
       },
       'instantKnowledgeBase': {
         name: 'सोपे समजावून सांगा',
-        description: 'सोप्या उपमांसह संक्षिप्त, सोपी स्पष्टीकरणे मिळवा.'
+        description: 'सोप्या उपमांसह संक्षिप्त, सोपी स्पष्टीकरणे मिळवा।'
       }
     },
     'ગુજરાતી': {
@@ -167,13 +164,13 @@ function App() {
       },
       'instantKnowledgeBase': {
         name: 'સરળતાથી સમજાવો',
-        description: 'સરળ સરખામણીઓ સાથે સંક્ષિપ્ત, સરળ સમજૂતીઓ મેળવો.'
+        description: 'સરળ સરખામણીઓ સાથે સંક્ષિપ્ત, સરળ સમજૂતીઓ મેળવો।'
       }
     },
     'પੰਜਾਬੀ': {
       'askMeAnything': {
         name: 'ਕੁਝ ਵੀ ਪੁੱਛੋ',
-        description: 'ਆਮ ਸਵਾਲਾਂ ਜਾਂ ਸਥਾਨਕ ਤੱਥਾਂ (ਭਾਰਤ-ਕੇਂਦਰਿਤ) ਦੇ ਜਵਾਬ ਪ੍ਰਾਪਤ ਕਰੋ।'
+        description: "ਆਪਣੀ ਪ੍ਰਸ਼ਨ ਦਰਜ ਕਰੋ (ਉਦਾਹਰਨ ਲਈ, 'ਭਾਰਤ ਦੀਆਂ ਮੁੱਖ ਨਦੀਆਂ ਕਿਹੜੀਆਂ ਹਨ?', 'ਇੰਗਲੈਂਡ ਵਿੱਚ ਕ੍ਰਿਕਟ ਦਾ ਇਤਿਹਾਸ ਦੱਸੋ।')."
       },
       'storyfy': {
         name: 'ਕਹਾਣੀ ਬਣਾਓ',
@@ -260,7 +257,7 @@ function App() {
       'generating': 'பதில் உருவாக்கப்படுகிறது...',
       'copySuccess': 'நகலெடுக்கப்பட்டது!'
     },
-    'ಕನ್ನಡ': {
+    'கನ್ನಡ': {
       'dashboardTitle': 'ಇಂದು ನೀವು ಏನು ಮಾಡಲು ಬಯಸುತ್ತೀರಿ?',
       'askMeAnythingTitle': 'ಏನಾದರೂ ಕೇಳಿ',
       'askMeAnythingPlaceholder': "ನಿಮ್ಮ ಪ್ರಶ್ನೆಯನ್ನು ನಮೂದಿಸಿ (ಉದಾ: 'ಭಾರತದ ಪ್ರಮುಖ ನದಿಗಳು ಯಾವುವು?', 'ಇಂಗ್ಲೆಂಡ್‌ನಲ್ಲಿ ಕ್ರಿಕೆಟ್ ಇತಿಹಾಸದ ಬಗ್ಗೆ ಹೇಳಿ').",
@@ -273,7 +270,6 @@ function App() {
       'backButton': 'ಮನೆಗೆ ಹಿಂತಿರುಗಿ',
       'aiResponseHeading': 'AI ಪ್ರತಿಕ್ರಿಯೆ:',
       'signInMessage': 'ಸಹಾಯಕ ಬಳಸಲು ದಯವಿಟ್ಟು ಸೈನ್ ಇನ್ ಮಾಡಿ.',
-      'chooseLanguageTitle': 'ನಿಮ್ಮ ಆದ್ಯತೆಯ ಭಾಷೆಯನ್ನು ಆರಿಸಿ',
       'listening': 'ಕೇಳಲಾಗುತ್ತಿದೆ...',
       'generating': 'ಪ್ರತಿಕ್ರಿಯೆ ರಚಿಸಲಾಗುತ್ತಿದೆ...',
       'copySuccess': 'ನಕಲಿಸಲಾಗಿದೆ!'
@@ -283,7 +279,7 @@ function App() {
       'askMeAnythingTitle': 'എന്തും ചോദിക്കൂ',
       'askMeAnythingPlaceholder': "നിങ്ങളുടെ ചോദ്യം നൽകുക (ഉദാ: 'ഇന്ത്യയിലെ പ്രധാന നദികൾ ഏതെല്ലാമാണ്?', 'ഇംഗ്ലണ്ടിലെ ക്രിക്കറ്റിന്റെ ചരിത്രം പറയുക.').",
       'storyfyTitle': 'കഥയാക്കൂ',
-      'storyfyPlaceholder': "കഥയാക്കാൻ ഒരു ആശയം അല്ലെങ്കിൽ ചോദ്യം നൽകുക (ഉദാ: 'പ്രകാശസംശ്ലേഷണം വിശദീകരിക്കുക', 'നക്ഷത്രങ്ങൾ എന്തിന് തിളങ്ങുന്നു?').",
+      'storyfyPlaceholder': "കുട്ടികൾക്കായി ആശയങ്ങളെ ലളിതമായ കഥകളാക്കി മാറ്റുക.'പ്രകാശസംശ്ലേഷണം വിശദീകരിക്കുക', 'നക്ഷത്രങ്ങൾ എന്തിന് തിളങ്ങുന്നു?').",
       'instantKnowledgeBaseTitle': 'ലളിതമായി വിശദീകരിക്കുക',
       'instantKnowledgeBasePlaceholder': "വിദ്യാർത്ഥി ചോദ്യം ചോദിക്കുക (ഉദാ: 'ആകാശം നീലയായിരിക്കുന്നത് എന്തുകൊണ്ട്?', 'വൈദ്യുതി എന്നാൽ എന്ത്?').",
       'generateButton': 'ഉണ്ടാക്കുക',
@@ -326,7 +322,7 @@ function App() {
       'clearButton': 'साफ करा',
       'backButton': 'मुख्यपृष्ठावर परत जा',
       'aiResponseHeading': 'AI प्रतिसाद:',
-      'signInMessage': 'सहायक वापरण्यासाठी कृपया साइन इन करा.',
+      'signInMessage': 'सहायक वापरण्यासाठी कृपया साइन इन करा।',
       'chooseLanguageTitle': 'आपली पसंतीची भाषा निवडा',
       'listening': 'ऐकत आहे...',
       'generating': 'प्रतिसाद तयार करत आहे...',
@@ -357,7 +353,7 @@ function App() {
       'storyfyTitle': 'ਕਹਾਣੀ ਬਣਾਓ',
       'storyfyPlaceholder': "ਕਹਾਣੀ ਬਣਾਉਣ ਲਈ ਇੱਕ ਸੰਕਲਪ ਜਾਂ ਪ੍ਰਸ਼ਨ ਦਰਜ ਕਰੋ (ਉਦਾਹਰਨ ਲਈ, 'ਪ੍ਰਕਾਸ਼ ਸੰਸ਼ਲੇਸ਼ਣ ਬਾਰੇ ਦੱਸੋ', 'ਤਾਰੇ ਕਿਉਂ ਚਮਕਦੇ ਹਨ?').",
       'instantKnowledgeBaseTitle': 'ਸਰਲਤਾ ਨਾਲ ਸਮਝਾਓ',
-      'instantKnowledgeBasePlaceholder': "ਵਿਦਿਆਰਥੀ ਸਵਾਲ ਪੁੱਛੋ (ਉਦਾਹਰਨ ਲਈ, 'ਅਕਾਸ਼ ਨੀਲਾ ਕਿਉਂ ਹੈ?', 'ਬਿਜਲੀ ਕੀ ਹੈ?').",
+      'instantKnowledgeBasePlaceholder': "ਸਵਾਲ ਪੁੱਛੋ (ਉਦਾਹਰਨ ਲਈ, 'ਅਕਾਸ਼ ਨੀਲਾ ਕਿਉਂ ਹੈ?', 'ਬਿਜਲੀ ਕੀ ਹੈ?').",
       'generateButton': 'ਤਿਆਰ ਕਰੋ',
       'clearButton': 'ਸਾਫ਼ ਕਰੋ',
       'backButton': 'ਘਰ ਵਾਪਸ ਜਾਓ',
@@ -370,122 +366,67 @@ function App() {
     }
   };
 
-  // Helper to get the current language code
-  const getCurrentLangCode = () => {
-    const lang = languageOptions.find(opt => opt.name === selectedLanguage);
-    return lang ? lang.langCode : 'en-US'; // Default to English US
-  };
-
-  // Effect for Authentication and Language Preference Loading
+  // 1. Effect for Authentication State Changes (Runs ONCE on mount)
   useEffect(() => {
     const unsubscribeAuth = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
-      if (currentUser) {
-        const savedLanguage = localStorage.getItem('userLanguage');
-        if (savedLanguage) {
-          setSelectedLanguage(savedLanguage);
-        } else {
-          setShowLanguageSetup(true);
-        }
-      } else {
+      // If user logs out, reset relevant states
+      if (!currentUser) {
         setAiResponse('');
         setPrompt('');
         setCurrentView('dashboard');
-        setSelectedLanguage('English');
+        setSelectedLanguage('English'); // Reset to default English
         localStorage.removeItem('userLanguage');
+        setShowLanguageSetup(false); // Ensure language setup is not shown if logged out
       }
     });
 
-    // Close language dropdown if clicked outside
+    return () => unsubscribeAuth(); // Cleanup auth listener on component unmount
+  }, []); // Empty dependency array: runs only ONCE on mount
+
+  // 2. Effect for Initial Language Preference (Runs ONCE on mount or when user state changes for first time)
+  useEffect(() => {
+    // Only check language setup if user is loaded and it's the first time
+    if (user) { // Only proceed if user state is determined
+      const savedLanguage = localStorage.getItem('userLanguage');
+      if (savedLanguage) {
+        setSelectedLanguage(savedLanguage);
+        setShowLanguageSetup(false); // Hide setup if language already saved
+      } else {
+        setShowLanguageSetup(true); // Show setup if no language saved and user is logged in
+      }
+    } else if (user === null) { // User is not logged in initially
+        // You might want to pre-check local storage for language even without login
+        const savedLanguage = localStorage.getItem('userLanguage');
+        if (savedLanguage) {
+            setSelectedLanguage(savedLanguage);
+            setShowLanguageSetup(false);
+        } else {
+            // Decide if you want to show language setup to unauthenticated users
+            // For now, let's keep it consistent: only show if user logs in and no language saved.
+            setShowLanguageSetup(false); // Default to false for unauthenticated, user will be prompted on sign-in
+        }
+    }
+  }, [user]); // Depends on 'user' to run after auth state is known
+
+  // 3. Effect for Language Dropdown Click Outside (Remains unchanged)
+  useEffect(() => {
     const handleClickOutside = (event) => {
       if (languageDropdownRef.current && !languageDropdownRef.current.contains(event.target)) {
         setShowLanguageDropdown(false);
       }
     };
     document.addEventListener('mousedown', handleClickOutside);
-
-    // Initialize SpeechRecognition
-    if ('SpeechRecognition' in window || 'webkitSpeechRecognition' in window) {
-      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-      recognitionRef.current = new SpeechRecognition();
-      recognitionRef.current.continuous = false; // Listen for a single utterance
-      recognitionRef.current.interimResults = false; // Only return final results
-
-      recognitionRef.current.onresult = (event) => {
-        const transcript = Array.from(event.results)
-          .map(result => result[0].transcript)
-          .join('');
-        setPrompt(transcript);
-        setIsListening(false);
-        setTriggerVoiceOutput(true);
-      };
-
-      recognitionRef.current.onerror = (event) => {
-        console.error('Speech recognition error:', event.error);
-        setIsListening(false);
-        setTriggerVoiceOutput(false);
-        alert("Speech recognition error: " + event.error);
-      };
-
-      recognitionRef.current.onend = () => {
-        console.log('Speech recognition ended. Current prompt:', prompt);
-        setIsListening(false);
-        setTimeout(() => {
-          console.log('Prompt value after timeout in onend:', prompt);
-          if (prompt.trim()) {
-            console.log('Attempting to auto-generate content from speech end.');
-            handleGenerateContent();
-          } else {
-            console.log('No prompt detected, not auto-generating.');
-            setTriggerVoiceOutput(false);
-          }
-        }, 100);
-      };
-    } else {
-      console.warn("Speech Recognition API not supported in this browser.");
-    }
-
-    // Log available voices to console for debugging TTS issues
-    if ('speechSynthesis' in window) {
-      speechSynthesis.onvoiceschanged = () => {
-        console.log("Available TTS voices:", speechSynthesis.getVoices().map(voice => ({
-          name: voice.name,
-          lang: voice.lang,
-          default: voice.default
-        })));
-      };
-      if (speechSynthesis.getVoices().length > 0) {
-        console.log("Available TTS voices (on load):", speechSynthesis.getVoices().map(voice => ({
-          name: voice.name,
-          lang: voice.lang,
-          default: voice.default
-        })));
-      }
-    }
-
     return () => {
-      unsubscribeAuth();
       document.removeEventListener('mousedown', handleClickOutside);
-      if (recognitionRef.current) {
-        recognitionRef.current.stop();
-      }
-      if (speechSynthesis.speaking) {
-        speechSynthesis.cancel();
-      }
     };
-  }, [prompt]);
-
-  // Speak AI response when it changes, ONLY if triggerVoiceOutput is true
-  useEffect(() => {
-    if (aiResponse && !loading && triggerVoiceOutput) {
-      handleSpeakResponse(aiResponse);
-    }
-  }, [aiResponse, loading, triggerVoiceOutput]);
+  }, []);
 
   const handleGoogleSignIn = async () => {
     const provider = new GoogleAuthProvider();
     try {
       await signInWithPopup(auth, provider);
+      // Language setup will be handled by the useEffect after user state updates
     } catch (error) {
       console.error("Error signing in with Google:", error);
       alert("Error signing in. Please try again.");
@@ -509,57 +450,6 @@ function App() {
     setShowLanguageDropdown(false);
   };
 
-  // Speech-to-Text handler
-  const handleVoiceInput = () => {
-    if (!recognitionRef.current) {
-      alert("Speech Recognition is not supported in your browser.");
-      return;
-    }
-
-    if (isListening) {
-      recognitionRef.current.stop();
-      setIsListening(false);
-    } else {
-      recognitionRef.current.lang = getCurrentLangCode();
-      recognitionRef.current.start();
-      setIsListening(true);
-      setPrompt('');
-      setAiResponse('');
-      setTriggerVoiceOutput(true);
-    }
-  };
-
-  // Text-to-Speech handler
-  const handleSpeakResponse = (textToSpeak) => {
-    if (!'speechSynthesis' in window) {
-      alert("Text-to-Speech is not supported in your browser.");
-      return;
-    }
-    if (speechSynthesis.speaking) {
-      speechSynthesis.cancel();
-    }
-
-    const utterance = new SpeechSynthesisUtterance(textToSpeak);
-    utterance.lang = getCurrentLangCode();
-
-    const voices = speechSynthesis.getVoices();
-    const preferredVoice = voices.find(
-      voice => voice.lang === getCurrentLangCode() && voice.default
-    ) || voices.find(
-      voice => voice.lang.startsWith(getCurrentLangCode().substring(0, 2))
-    );
-
-    if (preferredVoice) {
-      utterance.voice = preferredVoice;
-      console.log(`Using voice: ${preferredVoice.name} (${preferredVoice.lang}) for language code ${getCurrentLangCode()}`);
-    } else {
-      console.warn(`No specific voice found for ${getCurrentLangCode()}. Using browser default.`);
-      utterance.lang = getCurrentLangCode();
-    }
-
-    speechSynthesis.speak(utterance);
-  };
-
   // Copy to Clipboard handler
   const handleCopyResponse = () => {
     if (aiResponse) {
@@ -578,12 +468,11 @@ function App() {
     if (!prompt.trim()) {
       alert('Please enter your query!');
       setLoading(false);
-      setTriggerVoiceOutput(false);
       return;
     }
     setLoading(true);
-    setAiResponse('');
-    if (speechSynthesis.speaking) {
+    setAiResponse(''); // Clear response at the start of new generation
+    if (speechSynthesis.speaking) { // Keep this if you still have other TTS features or might re-enable
       speechSynthesis.cancel();
     }
 
@@ -602,7 +491,6 @@ function App() {
       default:
         alert("Please select an option from the home screen.");
         setLoading(false);
-        setTriggerVoiceOutput(false);
         return;
     }
 
@@ -630,13 +518,11 @@ function App() {
     if (speechSynthesis.speaking) {
       speechSynthesis.cancel();
     }
-    setTriggerVoiceOutput(false);
   };
 
   // Handles manual text input changing the prompt
   const handlePromptChange = (e) => {
     setPrompt(e.target.value);
-    setTriggerVoiceOutput(false);
   };
 
   // Get translated texts for the current view content
@@ -728,7 +614,7 @@ function App() {
                         <span className="feature-card-icon">
                           {card.id === 'askMeAnything' ? '💬' :
                            card.id === 'storyfy' ? '📚' :
-                           card.id === 'instantKnowledgeBase' ? '💡' : // Icon for SimplyExplain
+                           card.id === 'instantKnowledgeBase' ? '💡' :
                            '✨'}
                         </span>
                         <h3>{currentLanguageFeatures[card.id].name}</h3>
@@ -754,7 +640,7 @@ function App() {
                 <h2 className="feature-view-title">
                   {currentView === 'askMeAnything' ? currentViewTexts.askMeAnythingTitle :
                    currentView === 'storyfy' ? currentViewTexts.storyfyTitle :
-                   currentView === 'instantKnowledgeBase' ? currentViewTexts.instantKnowledgeBaseTitle : // Title for SimplyExplain
+                   currentView === 'instantKnowledgeBase' ? currentViewTexts.instantKnowledgeBaseTitle :
                    ''}
                 </h2>
 
@@ -767,21 +653,13 @@ function App() {
                         : currentView === 'storyfy'
                           ? currentViewTexts.storyfyPlaceholder
                           : currentView === 'instantKnowledgeBase'
-                            ? currentViewTexts.instantKnowledgeBasePlaceholder // Placeholder for SimplyExplain
+                            ? currentViewTexts.instantKnowledgeBasePlaceholder
                             : ''
                     }
                     value={prompt}
                     onChange={handlePromptChange}
-                    disabled={loading || isListening}
-                  ></textarea>
-                  <button
-                    onClick={handleVoiceInput}
-                    className={`voice-input-button ${isListening ? 'listening' : ''}`}
-                    title={isListening ? currentViewTexts.listening : 'Voice Input'}
                     disabled={loading}
-                  >
-                    🎤
-                  </button>
+                  ></textarea>
                 </div>
 
                 <div className="button-group">
@@ -811,13 +689,6 @@ function App() {
                   <div className="ai-response-container">
                     <h3>
                       {currentViewTexts.aiResponseHeading}
-                       <button
-                         onClick={() => handleSpeakResponse(aiResponse)}
-                         className="speak-button"
-                         title="Listen to Response"
-                       >
-                         🔊
-                       </button>
                        <button
                          onClick={handleCopyResponse}
                          className="copy-button"
