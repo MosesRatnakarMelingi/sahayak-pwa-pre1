@@ -1,12 +1,13 @@
 ﻿import React, { useState, useEffect, useRef } from 'react';
 import { GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from 'firebase/auth';
-import { auth } from './firebase';
-import { callGeminiApi } from './services/aiService';
+import { auth } from './firebase'; // Assuming firebase.js is correctly configured
 import './App.css';
 
-// --- IMPORTANT: These constants are now imported from config.js ---
-// Do NOT duplicate the content of config.js here.
+// Import constants from the new config.js file
 import { languageOptions, featureCards, featureTranslations, viewContentTranslations } from './config';
+
+// Import the new AI service function
+import { callGeminiApi } from './services/aiService';
 
 
 function App() {
@@ -114,14 +115,8 @@ function App() {
   // Copy to Clipboard handler
   const handleCopyResponse = () => {
     if (aiResponse) {
-      navigator.clipboard.writeText(aiResponse)
-        .then(() => {
-          alert(currentViewTexts.copySuccess);
-        })
-        .catch(err => {
-          console.error('Failed to copy text: ', err);
-          alert('Failed to copy text. Please try again.');
-        });
+      document.execCommand('copy'); // Use document.execCommand for clipboard in iframe
+      alert(currentViewTexts.copySuccess);
     }
   };
 
@@ -137,7 +132,8 @@ function App() {
     let finalPrompt = prompt;
 
     // Handle 'under development' features
-    if (['artify', 'adaptify', 'lensAI', 'readify'].includes(currentView)) { // Gamify removed from this list
+    // Removed 'gamify' from this check as it's now implemented
+    if (['artify', 'adaptify', 'lensAI', 'readify'].includes(currentView)) {
       setAiResponse(currentViewTexts[`${currentView}UnderDevelopment`]);
       setLoading(false);
       return;
@@ -153,8 +149,8 @@ function App() {
       case 'explainify':
         finalPrompt = `You are explaining concepts to a young child (age 6-10). Explain the following concept or question very simply, accurately, and clearly. Your explanation should be **very brief** (1-3 short sentences/paragraphs). Crucially, include **only one, very clear, and highly relatable analogy** that a child would immediately understand (e.g., for electricity, "like water flowing in pipes"). Do NOT use complex words or multiple analogies. Explain this concept in ${selectedLanguage}: "${prompt}"`;
         break;
-      case 'gamify': // Updated Gamify prompt for consistent text output
-        finalPrompt = `Generate a simple, text-based interactive game or quiz based on the following topic for elementary school children. The game should be playable directly by the user typing responses in the chat. Provide clear instructions for the user to play. Ensure the content is appropriate for an Indian context. Do NOT provide any code, only the game text and instructions. Topic: "${prompt}"`;
+      case 'gamify': // Added Gamify logic
+        finalPrompt = `Generate a simple, text-based interactive game or quiz based on the following topic for elementary school children. The game should be playable directly through text. Provide clear instructions for the user to play. Ensure the content is appropriate for an Indian context. Topic: "${prompt}"`;
         break;
       default:
         alert("Please select an option from the home screen.");
@@ -163,17 +159,19 @@ function App() {
     }
 
     // Only add language prefix if not Explainify and not English
-    // Explainify already handles language internally. For Gamify, we explicitly ask for Indian context and output format.
-    if (currentView !== 'explainify' && selectedLanguage !== 'English') {
+    // Explainify already handles language internally. For Gamify, we explicitly ask for Indian context.
+    if (currentView !== 'explainify' && currentView !== 'gamify' && selectedLanguage !== 'English') {
         finalPrompt = `Respond in ${selectedLanguage}: ${finalPrompt}`;
     }
 
     try {
-      const text = await callGeminiApi(finalPrompt); // Using the callGeminiApi from aiService.js
+      // Use the new callGeminiApi function from aiService.js
+      const text = await callGeminiApi(finalPrompt);
       setAiResponse(text);
     } catch (error) {
       console.error("Error generating content:", error);
-      setAiResponse("Error: Could not generate content. Please try again. " + error.message);
+      // The error message from aiService.js is already user-friendly
+      setAiResponse("Error: " + error.message);
     } finally {
       setLoading(false);
     }
@@ -313,7 +311,8 @@ function App() {
                 </h2>
 
                 {/* Conditional rendering for "under development" message */}
-                {['artify', 'adaptify', 'lensAI', 'readify'].includes(currentView) ? ( // Gamify removed from this list
+                {/* Removed 'gamify' from this check */}
+                {['artify', 'adaptify', 'lensAI', 'readify'].includes(currentView) ? (
                   <div className="under-development-message">
                     <p>{currentViewTexts[`${currentView}UnderDevelopment`]}</p>
                   </div>

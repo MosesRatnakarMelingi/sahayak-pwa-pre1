@@ -17,7 +17,7 @@ export const languageOptions = [
 
 export const featureCards = [
   { id: 'askAI', icon: '❓', title: 'AskAI', description: 'Get general queries or facts (India-focused).' },
-  { id: 'storyfy', icon: '📖', title: 'Storyfy', description: 'Explain concepts simply as stories for kids.' },
+  { id: 'storyfy', icon: '📖', title: 'Storify', description: 'Explain concepts simply as stories for kids.' },
   { id: 'explainify', icon: '💡', title: 'Explainify', description: 'Get concise, simple explanations with easy analogies.' },
   { id: 'gamify', icon: '🎲', title: 'Gamify', description: 'Generate simple, text-based games from any lesson or topic.' },
   { id: 'artify', icon: '🎨', title: 'Artify', description: 'Generate simple instructions for line drawings or charts from your descriptions.' },
@@ -33,7 +33,7 @@ export const featureTranslations = {
       description: 'Get general queries or facts (India-focused).'
     },
     'storyfy': {
-      name: 'Storyfy',
+      name: 'Storify',
       description: 'Explain concepts simply as stories for kids.'
     },
     'explainify': {
@@ -382,8 +382,8 @@ export const viewContentTranslations = {
     'dashboardTitle': 'What would you like to do today?',
     'askAITitle': 'AskAI',
     'askAIPlaceholder': "Enter your query (e.g., 'What are the main rivers in India?', 'Tell me about the history of cricket in England').",
-    'storyfyTitle': 'Storyfy',
-    'storyfyPlaceholder': "Enter a concept or question to 'Storyfy' (e.g., 'Explain photosynthesis', 'Why do stars twinkle?').",
+    'storyfyTitle': 'Storify',
+    'storyfyPlaceholder': "Enter a concept or question to 'Storify' (e.g., 'Explain photosynthesis', 'Why do stars twinkle?').",
     'explainifyTitle': 'Explainify',
     'explainifyPlaceholder': "Ask a student question (e.g., 'Why is the sky blue?', 'What is electricity?').",
     'gamifyTitle': 'Gamify',
@@ -627,7 +627,7 @@ export const viewContentTranslations = {
     ,
     'readifyUnderDevelopment': 'এই বৈশিষ্ট্যটি বর্তমানে উন্নয়নাধীন। আপডেটের জন্য সাথে থাকুন!'
   },
-  'मराठी': {
+  'মराठी': {
     'appTitle': 'सहायक पीडब्ल्यूए',
     'homeButton': 'होम',
     'setupLanguage': 'भाषा सेट करा',
