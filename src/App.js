@@ -14,7 +14,7 @@ function App() {
   const [user, setUser] = useState(null);
   const [prompt, setPrompt] = useState('');
   const [aiResponse, setAiResponse] = useState('');
-  const [loading, setLoading] = useState(false); // Corrected this line
+  const [loading, setLoading] = useState(false); // Corrected: Added useState(false)
 
   const [currentView, setCurrentView] = useState('dashboard');
 
@@ -113,14 +113,14 @@ function App() {
   };
 
   // NEW Clipboard handler using navigator.clipboard.writeText
-  const handleCopyResponse = async () => {
-    if (aiResponse) {
-      try {
-        await navigator.clipboard.writeText(aiResponse);
-        alert(currentViewTexts.copySuccess);
-      } catch (err) {
-        console.error('Failed to copy text: ', err);
-        alert('Failed to copy. Your browser might not support automatic clipboard access, or you denied permission.');
+  const handleCopyResponse = async () => { //
+    if (aiResponse) { //
+      try { //
+        await navigator.clipboard.writeText(aiResponse); //
+        alert(currentViewTexts.copySuccess); //
+      } catch (err) { //
+        console.error('Failed to copy text: ', err); //
+        alert('Failed to copy. Your browser might not support automatic clipboard access, or you denied permission.'); //
       }
     }
   };
@@ -137,17 +137,16 @@ function App() {
     let finalPrompt = prompt;
 
     // Handle 'under development' features
-    // Removed 'gamify' from this check as it's now implemented
-    if (['artify', 'adaptify', 'lensAI', 'readify'].includes(currentView)) {
-      setAiResponse(currentViewTexts[`${currentView}UnderDevelopment`]);
-      setLoading(false);
-      return;
+    if (['artify', 'adaptify', 'lensAI', 'readify'].includes(currentView)) { //
+      setAiResponse(currentViewTexts[`${currentView}UnderDevelopment`]); //
+      setLoading(false); //
+      return; //
     }
 
     switch (currentView) {
       case 'askAI':
-        // Revised prompt for AskAI
-        finalPrompt = `You are Sahayak, a helpful teaching assistant for teachers in India. Your responses must always be factual, simple, easy to understand, and appropriate for children aged 15 and under. When responding to a query:
+        // Consistent prompt for AskAI: Language instruction at the very beginning
+        finalPrompt = `Respond in ${selectedLanguage}: You are Sahayak, a helpful teaching assistant for teachers in India. Your responses must always be factual, simple, easy to understand, and appropriate for children aged 15 and under. When responding to a query:
         1. Provide direct, factual answers.
         2. Use language that is kid-friendly and avoids complex jargon.
         3. Keep explanations concise and to the point.
@@ -156,13 +155,16 @@ function App() {
         Query: "${prompt}"`;
         break;
       case 'storyfy':
-        finalPrompt = `Turn the following concept or question into a simple, understandable, engaging story for elementary school children in India: "${prompt}"`;
+        // Consistent prompt for Storify: Language instruction at the very beginning
+        finalPrompt = `Respond in ${selectedLanguage}: Turn the following concept or question into a simple, understandable, engaging story for elementary school children in India: "${prompt}"`;
         break;
       case 'explainify':
-        finalPrompt = `You are explaining concepts to a young child (age 6-10). Explain the following concept or question very simply, accurately, and clearly. Your explanation should be **very brief** (1-3 short sentences/paragraphs). Crucially, include **only one, very clear, and highly relatable analogy** that a child would immediately understand (e.g., for electricity, "like water flowing in pipes"). Do NOT use complex words or multiple analogies. Explain this concept in ${selectedLanguage}: "${prompt}"`;
+        // Consistent prompt for Explainify: Language instruction at the very beginning
+        finalPrompt = `Respond in ${selectedLanguage}: You are explaining concepts to a young child (age 6-10). Explain the following concept or question very simply, accurately, and clearly. Your explanation should be **very brief** (1-3 short sentences/paragraphs). Crucially, include **only one, very clear, and highly relatable analogy** that a child would immediately understand (e.g., for electricity, "like water flowing in pipes"). Do NOT use complex words or multiple analogies. Concept: "${prompt}"`;
         break;
-      case 'gamify': // Added Gamify logic
-        finalPrompt = `Generate a simple, text-based interactive game or quiz based on the following topic for elementary school children. The game should be playable directly through text. Provide clear instructions for the user to play. Ensure the content is appropriate for an Indian context. Topic: "${prompt}"`;
+      case 'gamify':
+        // Consistent prompt for Gamify: Language instruction at the very beginning
+        finalPrompt = `Respond in ${selectedLanguage}: Generate a simple, text-based interactive game or quiz based on the following topic for elementary school children. The game should be playable directly through text. Provide clear instructions for the user to play. Ensure the content is appropriate for an Indian context. Topic: "${prompt}"`;
         break;
       default:
         alert("Please select an option from the home screen.");
@@ -170,33 +172,31 @@ function App() {
         return;
     }
 
-    // Only add language prefix if not Explainify and not English
-    // Explainify already handles language internally. For Gamify, we explicitly ask for Indian context.
-    if (currentView !== 'explainify' && currentView !== 'gamify' && selectedLanguage !== 'English') {
-        finalPrompt = `Respond in ${selectedLanguage}: ${finalPrompt}`;
-    }
+    // REMOVED: The general language prefixing logic, as it's now handled within each prompt.
+    // if (currentView !== 'explainify' && currentView !== 'gamify' && selectedLanguage !== 'English') {
+    //     finalPrompt = `Respond in ${selectedLanguage}: ${finalPrompt}`;
+    // }
 
     try {
       // Use the new callGeminiApi function from aiService.js
-      const text = await callGeminiApi(finalPrompt);
-      setAiResponse(text);
-    } catch (error) {
-      console.error("Error generating content:", error);
-      // The error message from aiService.js is already user-friendly
-      setAiResponse("Error: " + error.message);
-    } finally {
-      setLoading(false);
+      const text = await callGeminiApi(finalPrompt); //
+      setAiResponse(text); //
+    } catch (error) { //
+      console.error("Error generating content:", error); //
+      setAiResponse("Error: " + error.message); //
+    } finally { //
+      setLoading(false); //
     }
   };
 
   const handleClear = () => {
-    setPrompt('');
-    setAiResponse('');
+    setPrompt(''); //
+    setAiResponse(''); //
   };
 
   // Handles manual text input changing the prompt
   const handlePromptChange = (e) => {
-    setPrompt(e.target.value);
+    setPrompt(e.target.value); //
   };
 
   return (
@@ -282,7 +282,7 @@ function App() {
                     const featureData = featureTranslations[selectedLanguage]?.[card.id] || card; // Fallback to card itself if translation not found
 
                     // Determine if the card is "under development"
-                    const isUnderDevelopment = ['artify', 'adaptify', 'lensAI', 'readify'].includes(card.id);
+                    const isUnderDevelopment = ['artify', 'adaptify', 'lensAI', 'readify'].includes(card.id); //
 
                     return (
                       <button
@@ -323,8 +323,7 @@ function App() {
                 </h2>
 
                 {/* Conditional rendering for "under development" message */}
-                {/* Removed 'gamify' from this check */}
-                {['artify', 'adaptify', 'lensAI', 'readify'].includes(currentView) ? (
+                {['artify', 'adaptify', 'lensAI', 'readify'].includes(currentView) ? ( //
                   <div className="under-development-message">
                     <p>{currentViewTexts[`${currentView}UnderDevelopment`]}</p>
                   </div>
