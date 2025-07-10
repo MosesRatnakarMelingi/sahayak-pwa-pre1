@@ -14,7 +14,7 @@ function App() {
   const [user, setUser] = useState(null);
   const [prompt, setPrompt] = useState('');
   const [aiResponse, setAiResponse] = useState('');
-  const [loading, setLoading] = useState(false); // Corrected: Added useState(false)
+  const [loading, setLoading] = useState(false);
 
   const [currentView, setCurrentView] = useState('dashboard');
 
@@ -113,14 +113,14 @@ function App() {
   };
 
   // NEW Clipboard handler using navigator.clipboard.writeText
-  const handleCopyResponse = async () => { //
-    if (aiResponse) { //
-      try { //
-        await navigator.clipboard.writeText(aiResponse); //
-        alert(currentViewTexts.copySuccess); //
-      } catch (err) { //
-        console.error('Failed to copy text: ', err); //
-        alert('Failed to copy. Your browser might not support automatic clipboard access, or you denied permission.'); //
+  const handleCopyResponse = async () => {
+    if (aiResponse) {
+      try {
+        await navigator.clipboard.writeText(aiResponse);
+        alert(currentViewTexts.copySuccess);
+      } catch (err) {
+        console.error('Failed to copy text: ', err);
+        alert('Failed to copy. Your browser might not support automatic clipboard access, or you denied permission.');
       }
     }
   };
@@ -133,14 +133,15 @@ function App() {
     }
     setLoading(true);
     setAiResponse(''); // Clear response at the start of new generation
+    setPrompt(''); // New: Clear the prompt text area
 
     let finalPrompt = prompt;
 
     // Handle 'under development' features
-    if (['artify', 'adaptify', 'lensAI', 'readify'].includes(currentView)) { //
-      setAiResponse(currentViewTexts[`${currentView}UnderDevelopment`]); //
-      setLoading(false); //
-      return; //
+    if (['artify', 'adaptify', 'lensAI', 'readify'].includes(currentView)) {
+      setAiResponse(currentViewTexts[`${currentView}UnderDevelopment`]);
+      setLoading(false);
+      return;
     }
 
     switch (currentView) {
@@ -172,31 +173,26 @@ function App() {
         return;
     }
 
-    // REMOVED: The general language prefixing logic, as it's now handled within each prompt.
-    // if (currentView !== 'explainify' && currentView !== 'gamify' && selectedLanguage !== 'English') {
-    //     finalPrompt = `Respond in ${selectedLanguage}: ${finalPrompt}`;
-    // }
-
     try {
       // Use the new callGeminiApi function from aiService.js
-      const text = await callGeminiApi(finalPrompt); //
-      setAiResponse(text); //
-    } catch (error) { //
-      console.error("Error generating content:", error); //
-      setAiResponse("Error: " + error.message); //
-    } finally { //
-      setLoading(false); //
+      const text = await callGeminiApi(finalPrompt);
+      setAiResponse(text);
+    } catch (error) {
+      console.error("Error generating content:", error);
+      setAiResponse("Error: " + error.message);
+    } finally {
+      setLoading(false);
     }
   };
 
   const handleClear = () => {
-    setPrompt(''); //
-    setAiResponse(''); //
+    setPrompt('');
+    setAiResponse('');
   };
 
   // Handles manual text input changing the prompt
   const handlePromptChange = (e) => {
-    setPrompt(e.target.value); //
+    setPrompt(e.target.value);
   };
 
   return (
@@ -282,7 +278,7 @@ function App() {
                     const featureData = featureTranslations[selectedLanguage]?.[card.id] || card; // Fallback to card itself if translation not found
 
                     // Determine if the card is "under development"
-                    const isUnderDevelopment = ['artify', 'adaptify', 'lensAI', 'readify'].includes(card.id); //
+                    const isUnderDevelopment = ['artify', 'adaptify', 'lensAI', 'readify'].includes(card.id);
 
                     return (
                       <button
@@ -323,7 +319,7 @@ function App() {
                 </h2>
 
                 {/* Conditional rendering for "under development" message */}
-                {['artify', 'adaptify', 'lensAI', 'readify'].includes(currentView) ? ( //
+                {['artify', 'adaptify', 'lensAI', 'readify'].includes(currentView) ? (
                   <div className="under-development-message">
                     <p>{currentViewTexts[`${currentView}UnderDevelopment`]}</p>
                   </div>
@@ -339,7 +335,7 @@ function App() {
                               ? currentViewTexts.storyfyPlaceholder
                               : currentView === 'explainify'
                                 ? currentViewTexts.explainifyPlaceholder
-                                : currentView === 'gamify' // Added gamify placeholder
+                                : currentView === 'gamify'
                                   ? currentViewTexts.gamifyPlaceholder
                                   : ''
                         }
