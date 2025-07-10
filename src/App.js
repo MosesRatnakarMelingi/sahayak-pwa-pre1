@@ -14,7 +14,7 @@ function App() {
   const [user, setUser] = useState(null);
   const [prompt, setPrompt] = useState('');
   const [aiResponse, setAiResponse] = useState('');
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(false); // Corrected this line
 
   const [currentView, setCurrentView] = useState('dashboard');
 
@@ -112,11 +112,16 @@ function App() {
     setShowLanguageDropdown(false);
   };
 
-  // Copy to Clipboard handler
-  const handleCopyResponse = () => {
+  // NEW Clipboard handler using navigator.clipboard.writeText
+  const handleCopyResponse = async () => {
     if (aiResponse) {
-      document.execCommand('copy'); // Use document.execCommand for clipboard in iframe
-      alert(currentViewTexts.copySuccess);
+      try {
+        await navigator.clipboard.writeText(aiResponse);
+        alert(currentViewTexts.copySuccess);
+      } catch (err) {
+        console.error('Failed to copy text: ', err);
+        alert('Failed to copy. Your browser might not support automatic clipboard access, or you denied permission.');
+      }
     }
   };
 
@@ -141,7 +146,14 @@ function App() {
 
     switch (currentView) {
       case 'askAI':
-        finalPrompt = `As a helpful teaching assistant from India, respond to the following request. If a specific country is mentioned, adjust context accordingly, otherwise, keep an Indian context: ${prompt}`;
+        // Revised prompt for AskAI
+        finalPrompt = `You are Sahayak, a helpful teaching assistant for teachers in India. Your responses must always be factual, simple, easy to understand, and appropriate for children aged 15 and under. When responding to a query:
+        1. Provide direct, factual answers.
+        2. Use language that is kid-friendly and avoids complex jargon.
+        3. Keep explanations concise and to the point.
+        4. If a specific country is mentioned, adjust context accordingly; otherwise, maintain an Indian context.
+
+        Query: "${prompt}"`;
         break;
       case 'storyfy':
         finalPrompt = `Turn the following concept or question into a simple, understandable, engaging story for elementary school children in India: "${prompt}"`;

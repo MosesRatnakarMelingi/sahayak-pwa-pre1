@@ -404,7 +404,7 @@ export const viewContentTranslations = {
     'artifyUnderDevelopment': 'This feature is under development. You will be notified once it is completed. Artify helps generate simple instructions for line drawings or charts from your descriptions.',
     'adaptifyUnderDevelopment': 'This feature is under development. You will be notified once it is completed. Adaptify will help upload content (e.g., textbook page photo) to generate differentiated materials for various grade levels.',
     'lensAIUnderDevelopment': 'This feature is under development. You will be notified once it is completed. LensAI will help you upload diagrams or charts for AI-powered explanations of their components and concepts.',
-    'readifyUnderDevelopment': 'This feature is currently under development. Stay tuned for updates!',
+    'readifyUnderDevelopment': 'This feature is under development. Stay tuned for updates!',
   },
   'हिंदी': {
     'appTitle': 'सहायक पीडब्ल्यूए',
@@ -440,7 +440,7 @@ export const viewContentTranslations = {
     'artifyUnderDevelopment': 'यह सुविधा विकास के अधीन है। पूरा होने पर आपको सूचित किया जाएगा। आर्टिफ़ाई आपके विवरण से रेखा चित्र या चार्ट के लिए सरल निर्देश तैयार करने में मदद करता है।',
     'adaptifyUnderDevelopment': 'यह सुविधा विकास के अधीन है। पूरा होने पर आपको सूचित किया जाएगा। अनुकूलन विभिन्न ग्रेड स्तरों के लिए भिन्न सामग्री बनाने के लिए सामग्री (उदा. पाठ्यपुस्तक पृष्ठ फोटो) अपलोड करने में मदद करेगा।',
     'lensAIUnderDevelopment': 'यह सुविधा विकास के अधीन है। पूरा होने पर आपको सूचित किया जाएगा। लेंसएआई आपको आरेख या चार्ट अपलोड करने में मदद करेगा ताकि उनके घटकों और अवधारणाओं की एआई-संचालित व्याख्या मिल सके।',
-    'readifyUnderDevelopment': 'यह सुविधा वर्तमान में विकास के अधीन है। अपडेट के लिए बने रहें!',
+    'readifyUnderDevelopment': 'यह सुविधा विकास के अधीन है। अपडेट के लिए बने रहें!',
   },
   'తెలుగు': {
     'appTitle': 'సహాయక్ పీడబ్ల్యూఏ',
