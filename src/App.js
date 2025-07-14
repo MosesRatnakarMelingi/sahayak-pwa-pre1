@@ -2,6 +2,8 @@
 import { GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from 'firebase/auth';
 import { auth } from './firebase'; // Assuming firebase.js is correctly configured
 import './App.css';
+import ReactMarkdown from 'react-markdown'; // Import ReactMarkdown
+import remarkGfm from 'remark-gfm'; // Import remark-gfm for GitHub Flavored Markdown
 
 // Import constants from the new config.js file
 import { languageOptions, featureCards, featureTranslations, viewContentTranslations } from './config';
@@ -15,6 +17,7 @@ function App() {
   const [prompt, setPrompt] = useState('');
   const [aiResponse, setAiResponse] = useState('');
   const [loading, setLoading] = useState(false);
+  const [lastSubmittedPrompt, setLastSubmittedPrompt] = useState(''); // State to store the query
 
   const [currentView, setCurrentView] = useState('dashboard');
 
@@ -39,6 +42,7 @@ function App() {
       if (!currentUser) {
         setAiResponse('');
         setPrompt('');
+        setLastSubmittedPrompt(''); // Clear last submitted prompt on sign out
         setCurrentView('dashboard'); // Go to dashboard on sign out
         setSelectedLanguage('English'); // Reset to default English
         localStorage.removeItem('userLanguage');
@@ -112,7 +116,7 @@ function App() {
     setShowLanguageDropdown(false);
   };
 
-  // NEW Clipboard handler using navigator.clipboard.writeText
+  // Clipboard handler using navigator.clipboard.writeText
   const handleCopyResponse = async () => {
     if (aiResponse) {
       try {
@@ -133,9 +137,13 @@ function App() {
     }
     setLoading(true);
     setAiResponse(''); // Clear response at the start of new generation
-    setPrompt(''); // New: Clear the prompt text area
 
-    let finalPrompt = prompt;
+    // Capture the current prompt value BEFORE clearing the input field
+    const currentPromptValue = prompt;
+    setLastSubmittedPrompt(currentPromptValue); // Set this for display later
+    setPrompt(''); // Clear the prompt text area
+
+    let finalPrompt = ''; // Initialize finalPrompt here
 
     // Handle 'under development' features
     if (['artify', 'adaptify', 'lensAI', 'readify'].includes(currentView)) {
@@ -146,47 +154,44 @@ function App() {
 
     switch (currentView) {
       case 'askAI':
-        // Consistent prompt for AskAI: Language instruction at the very beginning
-        finalPrompt = `Respond in ${selectedLanguage}: 
+        finalPrompt = `Respond in ${selectedLanguage} and start the response DIRECTLY with the answer to the query, with no introductory phrases, greetings, or conversational setups:
         The responses are designed to assist teachers working with school-aged children (ages 6–15) in India. Each response should be framed in a way that helps the teacher present the information in a relatable, engaging, and age-appropriate manner. The tone should be friendly and conversational, but not roleplay as a character or speak directly as the teacher or child.
         You are Sahayak, a friendly and informative teaching assistant created for educators in India. Your role is to help school children (aged 15 and under) learn in a way that is:
-        Avoid repeating any introductory phrases such as greetings or self-introductions across responses. Jump directly into the answer unless context absolutely requires it.
         - Factually correct and clear
         - Easy to understand and free from technical or complex language
         - Moderately brief — not too short, not too long
         - Completely kid-safe — no content related to religion, politics, sensitive, or mature topics
         Tone and Style Guidelines:
         - Use a friendly, simple, and conversational tone as if you’re talking directly to children
-        - Do not use any markdown formatting characters or symbols for emphasis (like *, _, #, - etc.)
         - Always keep an India-first perspective. Respond with Indian context by default. Mention facts about other countries only if explicitly asked.
         Response Rules:
         - Provide direct and factual answers
         - Use age-appropriate language with no jargon
         - Keep explanations concise and focused
         - Prioritize India-centric facts unless another country is mentioned by name
-        Query: "${prompt}"`;
+        Query: "${currentPromptValue}"`;
         break;
       case 'storyfy':
-        // Consistent prompt for Storify: Language instruction at the very beginning
-        finalPrompt = `Respond in ${selectedLanguage}: Turn the following concept or question into a simple, understandable, engaging story for elementary school children in India:
+        finalPrompt = `Respond in ${selectedLanguage} and start the response DIRECTLY with the story/answer, with no introductory phrases, greetings, or conversational setups:
         Core Guidelines (Must-Haves):
-        The responses are designed to assist teachers working with school-aged children (ages 6–15) in India. Each response should be framed in a way that helps the teacher present the information in a relatable, engaging, and age-appropriate manner. The tone should be friendly and conversational, but not roleplay as a character or speak directly as the teacher or child.
+        The response is meant to assist teachers working with school-aged children (ages 6–15) in India.
+        Frame the response as a resource teachers can use — never roleplay as the teacher or student.
         - Use plain, kid-friendly language with no complex or technical terms
-        - Keep the story fully appropriate for children — avoid religion, politics, sensitive, or mature topics
-        - Use a warm, conversational tone as if you’re speaking directly to school children
-        - Do not use any markdown formatting characters or symbols (like *, _, #, - etc.)
-        - The story should be naturally India-centric unless another country is explicitly mentioned
-        - Avoid jargon and ensure the story suits young readers across urban and rural India
+        - Keep content fully appropriate for children — avoid religion, politics, sensitive, or mature topics
+        - Use a warm, conversational tone as if guiding a class
+        - Maintain an India-centric perspective unless another country is explicitly mentioned
+        - Avoid jargon and ensure suitability for children across urban and rural India
         Storytelling Notes:
-        - The story should clearly explain the concept while making it fun, relatable, and engaging
-        - You may use relatable characters (like a curious child, teacher, parent, animal, or object) to carry the story
-        - Keep the length moderate and the message easy to follow
-        - Encourage learning through imagination and everyday examples relevant to Indian children
-        "${prompt}"`;    
+        - The story must explain the concept clearly while being fun and relatable
+        - Use simple characters (like a child, parent, teacher, animal, or object) to guide the story
+        - Keep the story moderately short — just long enough to deliver the message without becoming too elaborate
+        - Encourage imagination through everyday examples familiar to Indian children
+        - Avoid long, elaborate plots or multiple sub-scenes; focus on clarity and engagement
+
+        "${currentPromptValue}"`;
         break;
       case 'explainify':
-        // Consistent prompt for Explainify: Language instruction at the very beginning
-        finalPrompt = `Respond in ${selectedLanguage}:
+        finalPrompt = `Respond in ${selectedLanguage} and start the response DIRECTLY with the explanation/answer, with no introductory phrases, greetings, or conversational setups:
         You are explaining concepts to a school-aged child (between 6–15 years old) in India. Your job is to make the explanation:
         The responses are designed to assist teachers working with school-aged children (ages 6–15) in India. Each response should be framed in a way that helps the teacher present the information in a relatable, engaging, and age-appropriate manner. The tone should be friendly and conversational, but not roleplay as a character or speak directly as the teacher or child.
         Core Requirements:
@@ -194,25 +199,22 @@ function App() {
         - Entirely kid-safe — avoid religious, political, sensitive, or mature topics
         - Free from complex words, technical language, or multiple analogies
         - Delivered in a warm, conversational tone that feels like talking directly to a child
-        - Written in plain text only — do not use any markdown formatting characters (like *, _, #, - etc.)
         - Focused on the Indian context unless another country is explicitly mentioned
         Special Instructions:
         - Include one highly relatable analogy that a child in India would immediately understand
         - Do not use more than one analogy or complicate it with comparisons
         - Begin with a direct, clear explanation of the concept before introducing the analogy
         - Keep the response moderately brief — long enough to explain, short enough to stay engaging
-        "${prompt}"`;
-        
+        "${currentPromptValue}"`;
+
         break;
       case 'gamify':
-        // Consistent prompt for Gamify: Language instruction at the very beginning
-        finalPrompt = `Respond in ${selectedLanguage}: 
-        Generate a simple, interactive text-based game or quiz based on the following topic. The game is meant to assist teachers working with school-aged children (ages 6–15) in India. Responses should be framed as resources for the teacher to present in a fun, engaging way — not interactive instructions for children to respond to directly.
+        finalPrompt = `Respond in ${selectedLanguage} and start the response DIRECTLY with the game/quiz instructions or content, with no introductory phrases, greetings, or conversational setups.
+        Generate a simple, interactive text-based game or quiz. The *entire content* of this game/quiz (including themes, questions, and answers) *must be directly and exclusively based on the following query*. Do NOT introduce any other topics or generic game themes (e.g., "Amazing Animals of India" or "India Explorer") unless the query explicitly asks for them. The game should be a direct application of the knowledge from the query. The game is meant to assist teachers working with school-aged children (ages 6–15) in India. Responses should be framed as resources for the teacher to present in a fun, engaging way — not interactive instructions for children to respond to directly.
         Core Requirements:
         - Use easy-to-understand language without technical or complex words
         - Ensure all content is completely kid-safe — no religion, politics, sensitive, or mature themes
         - Present the game in a friendly, age-appropriate tone suitable for Indian children
-        - Avoid markdown formatting (do not use *, _, #, - or any styling symbols)
         - Use an India-first perspective by default; mention other countries only if explicitly asked
         - Avoid jargon and ensure full relevance to children across India
         Game Structure Instructions:
@@ -220,7 +222,7 @@ function App() {
         - Present questions or challenges that are fun, educational, and easy to follow
         - Avoid asking players to input text or choose numbered options — the teacher will run the activity verbally or as a class discussion
         - Keep the game short and engaging enough to complete in one session
-        "${prompt}"`;
+        Query: "${currentPromptValue}"`;
         break;
       default:
         alert("Please select an option from the home screen.");
@@ -229,7 +231,6 @@ function App() {
     }
 
     try {
-      // Use the new callGeminiApi function from aiService.js
       const text = await callGeminiApi(finalPrompt);
       setAiResponse(text);
     } catch (error) {
@@ -243,9 +244,9 @@ function App() {
   const handleClear = () => {
     setPrompt('');
     setAiResponse('');
+    setLastSubmittedPrompt('');
   };
 
-  // Handles manual text input changing the prompt
   const handlePromptChange = (e) => {
     setPrompt(e.target.value);
   };
@@ -263,7 +264,6 @@ function App() {
                   key={lang.id}
                   onClick={() => saveLanguagePreference(lang.name)}
                 >
-                  {/* Removed icon span */}
                   {lang.name}
                 </button>
               ))}
@@ -295,7 +295,6 @@ function App() {
                         onClick={() => saveLanguagePreference(lang.name)}
                         className={selectedLanguage === lang.name ? 'selected' : ''}
                       >
-                        {/* Removed icon span */}
                         {lang.name}
                       </button>
                     ))}
@@ -328,11 +327,9 @@ function App() {
                 <h2 className="dashboard-title">{currentViewTexts.dashboardTitle}</h2>
                 <div className="feature-cards-grid">
                   {featureCards.map((card) => {
-                    // Use the icon directly from the featureCards array
                     const icon = card.icon;
-                    const featureData = featureTranslations[selectedLanguage]?.[card.id] || card; // Fallback to card itself if translation not found
-
-                    // Determine if the card is "under development"
+                    const featureData = featureTranslations[selectedLanguage]?.[card.id] || card;
+                    // Corrected: Check card.id instead of currentView
                     const isUnderDevelopment = ['artify', 'adaptify', 'lensAI', 'readify'].includes(card.id);
 
                     return (
@@ -344,10 +341,8 @@ function App() {
                         <span className="feature-card-icon">{icon}</span>
                         <h3>{featureData.name || featureData.title || card.id}</h3>
                         <p>{featureData.description || 'Description not available.'}</p>
-                        {/* Conditionally show development status for remaining features */}
                         {isUnderDevelopment && (
                             <span className="development-status">
-                                {/* Safely access the string before splitting, providing a fallback */}
                                 {(currentViewTexts[`${card.id}UnderDevelopment`] || 'Under Development').split('.')[0]}
                             </span>
                         )}
@@ -357,7 +352,6 @@ function App() {
                 </div>
               </div>
             ) : (
-              // Feature-specific view
               <div className="feature-view-container">
                 <button
                   onClick={() => {
@@ -373,7 +367,6 @@ function App() {
                   {currentViewTexts[`${currentView}Title`] || featureTranslations[selectedLanguage]?.[currentView]?.name || currentView}
                 </h2>
 
-                {/* Conditional rendering for "under development" message */}
                 {['artify', 'adaptify', 'lensAI', 'readify'].includes(currentView) ? (
                   <div className="under-development-message">
                     <p>{currentViewTexts[`${currentView}UnderDevelopment`]}</p>
@@ -425,6 +418,12 @@ function App() {
 
                     {aiResponse && (
                       <div className="ai-response-container">
+                        {lastSubmittedPrompt && (
+                            <div className="submitted-query">
+                                <h4>{currentViewTexts.yourQueryHeading || 'Your Query:'}</h4>
+                                <p>{lastSubmittedPrompt}</p>
+                            </div>
+                        )}
                         <h3>
                           {currentViewTexts.aiResponseHeading}
                            <button
@@ -435,7 +434,8 @@ function App() {
                              📋
                            </button>
                         </h3>
-                        <p>{aiResponse}</p>
+                        {/* Use ReactMarkdown to render the AI response */}
+                        <ReactMarkdown remarkPlugins={[remarkGfm]}>{aiResponse}</ReactMarkdown>
                       </div>
                     )}
                   </>
