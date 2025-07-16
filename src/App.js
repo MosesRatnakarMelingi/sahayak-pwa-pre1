@@ -30,6 +30,9 @@ function App() {
   const [showLanguageSetup, setShowLanguageSetup] = useState(false);
   const [showLanguageDropdown, setShowLanguageDropdown] = useState(false);
   const languageDropdownRef = useRef(null);
+  // Ref for the conversation container to enable auto-scrolling
+  const conversationEndRef = useRef(null);
+
 
   // Derived state for current view texts and feature translations
   const currentViewTexts = viewContentTranslations[selectedLanguage] || viewContentTranslations['English'];
@@ -78,10 +81,6 @@ function App() {
     }
   }, [user]); // Depends on 'user' to run after auth state is known
 
-  // Removed: Effect to clear conversation when selectedLanguage changes
-  // This is no longer needed as the AI will respond to the query language,
-  // and the dropdown will be hidden in feature views.
-
   // 3. Effect for Language Dropdown Click Outside
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -94,6 +93,14 @@ function App() {
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, []);
+
+  // Effect to scroll to the bottom of the conversation whenever it updates
+  useEffect(() => {
+    if (conversationEndRef.current) {
+      conversationEndRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [conversation]); // Dependency array: runs when conversation state changes
+
 
   const handleGoogleSignIn = async () => {
     const provider = new GoogleAuthProvider();
@@ -198,6 +205,17 @@ function App() {
   const handlePromptChange = (e) => {
     setPrompt(e.target.value);
   };
+
+  // Handle Enter key press for submission
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter' && !e.shiftKey && !loading) {
+      e.preventDefault(); // Prevent new line
+      handleGenerateContent();
+    }
+  };
+
+  // Determine if it's the initial state (no conversation yet)
+  const isInitialChatState = conversation.length === 0;
 
   return (
     <div className="app-container">
@@ -329,81 +347,135 @@ function App() {
                   </div>
                 ) : (
                   <>
-                    <div className="input-field-container">
-                      <textarea
-                        className="text-input"
-                        placeholder={
-                          currentView === 'askAI'
-                            ? currentViewTexts.askAIPlaceholder
-                            : currentView === 'storyfy'
-                              ? currentViewTexts.storyfyPlaceholder
-                              : currentView === 'explainify'
-                                ? currentViewTexts.explainifyPlaceholder
-                                : currentView === 'gamify'
-                                  ? currentViewTexts.gamifyPlaceholder
-                                  : ''
-                        }
-                        value={prompt}
-                        onChange={handlePromptChange}
-                        disabled={loading}
-                      ></textarea>
-                    </div>
-
-                    <div className="button-group">
-                      <button
-                        onClick={handleGenerateContent}
-                        className={`button-primary button-green ${loading ? 'disabled' : ''}`}
-                        disabled={loading}
-                      >
-                        {loading ? (
-                          <>
-                            <span className="spinner"></span> {currentViewTexts.generating}
-                          </>
-                        ) : (
-                          currentViewTexts.generateButton
-                        )}
-                      </button>
-                      <button
-                        onClick={handleClear}
-                        className="button-primary button-secondary"
-                        disabled={loading}
-                      >
-                        {currentViewTexts.clearButton}
-                      </button>
-                    </div>
-
-                    {/* NEW: Render the entire conversation */}
-                    <div className="ai-response-container">
-                      {conversation.map((message, index) => (
-                        <div key={index} className={`message-block ${message.sender}`}>
-                          {message.sender === 'user' ? (
-                            <>
-                              <h4>{currentViewTexts.yourQueryHeading || 'Your Query:'}</h4>
-                              <p>{message.text}</p>
-                            </>
-                          ) : (
-                            <>
-                              <h3>
-                                {currentViewTexts.aiResponseHeading}
-                                <button
-                                  onClick={() => handleCopyResponse(message.text)}
-                                  className="copy-button"
-                                  title="Copy to Clipboard"
-                                >
-                                  📋
-                                </button>
-                              </h3>
-                              <ReactMarkdown remarkPlugins={[remarkGfm]}>{message.text}</ReactMarkdown>
-                            </>
+                    {/* Conditional rendering for chat UI */}
+                    {isInitialChatState ? (
+                      // Initial state: input box in the middle
+                      <div className="initial-chat-state">
+                        <div className="input-field-container initial-input-container">
+                          <textarea
+                            className="text-input"
+                            placeholder={
+                              currentView === 'askAI'
+                                ? currentViewTexts.askAIPlaceholder
+                                : currentView === 'storyfy'
+                                  ? currentViewTexts.storyfyPlaceholder
+                                  : currentView === 'explainify'
+                                    ? currentViewTexts.explainifyPlaceholder
+                                    : currentView === 'gamify'
+                                      ? currentViewTexts.gamifyPlaceholder
+                                      : ''
+                            }
+                            value={prompt}
+                            onChange={handlePromptChange}
+                            onKeyDown={handleKeyDown} /* Corrected placement */
+                            disabled={loading}
+                          ></textarea>
+                        </div>
+                        <div className="button-group initial-button-group">
+                          <button
+                            onClick={handleGenerateContent}
+                            className={`button-primary button-green ${loading ? 'disabled' : ''}`}
+                            disabled={loading}
+                          >
+                            {loading ? (
+                              <>
+                                <span className="spinner"></span> {currentViewTexts.generating}
+                              </>
+                            ) : (
+                              currentViewTexts.generateButton
+                            )}
+                          </button>
+                          <button
+                            onClick={handleClear}
+                            className="button-primary button-secondary"
+                            disabled={loading}
+                          >
+                            {currentViewTexts.clearButton}
+                          </button>
+                        </div>
+                      </div>
+                    ) : (
+                      // Active chat state: conversation at top, input at bottom
+                      <>
+                        <div className="ai-response-container chat-scroll-area">
+                          {conversation.map((message, index) => (
+                            <div key={index} className={`message-block ${message.sender}`}>
+                              {message.sender === 'user' ? (
+                                <>
+                                  {/* Changed "Your Query" to user's display name, using translation */}
+                                  <h4>{user?.displayName || currentViewTexts.userNameLabel || 'You'}:</h4>
+                                  <p>{message.text}</p>
+                                </>
+                              ) : (
+                                <>
+                                  {/* Changed "AI Response" to "Sahayak", using translation */}
+                                  <h3>
+                                    {currentViewTexts.sahayakNameLabel || 'Sahayak'}:
+                                    <button
+                                      onClick={() => handleCopyResponse(message.text)}
+                                      className="copy-button"
+                                      title="Copy to Clipboard"
+                                    >
+                                      📋
+                                    </button>
+                                  </h3>
+                                  <ReactMarkdown remarkPlugins={[remarkGfm]}>{message.text}</ReactMarkdown>
+                                </>
+                              )}
+                            </div>
+                          ))}
+                          {loading && (
+                            <div className="message-block ai loading">
+                              <p>Thinking...</p>
+                            </div>
                           )}
+                          <div ref={conversationEndRef} />
                         </div>
-                      ))}
-                      {loading && (
-                        <div className="message-block ai loading">
-                          <p>Thinking...</p>
+
+                        <div className="input-field-container chat-input-bottom">
+                          <textarea
+                            className="text-input"
+                            placeholder={
+                              currentView === 'askAI'
+                                ? currentViewTexts.askAIPlaceholder
+                                : currentView === 'storyfy'
+                                  ? currentViewTexts.storyfyPlaceholder
+                                  : currentView === 'explainify'
+                                    ? currentViewTexts.explainifyPlaceholder
+                                    : currentView === 'gamify'
+                                      ? currentViewTexts.gamifyPlaceholder
+                                      : ''
+                            }
+                            value={prompt}
+                            onChange={handlePromptChange}
+                            onKeyDown={handleKeyDown} /* Corrected placement */
+                            disabled={loading}
+                          ></textarea>
+                          <div className="button-group chat-button-bottom">
+                            <button
+                              onClick={handleGenerateContent}
+                              className={`button-primary button-green ${loading ? 'disabled' : ''}`}
+                              disabled={loading}
+                            >
+                              {loading ? (
+                                <>
+                                  <span className="spinner"></span> {currentViewTexts.generating}
+                                </>
+                              ) : (
+                                currentViewTexts.generateButton
+                              )}
+                            </button>
+                            <button
+                              onClick={handleClear}
+                              className="button-primary button-secondary"
+                              disabled={loading}
+                            >
+                              {currentViewTexts.clearButton}
+                            </button>
+                          </div>
                         </div>
-                      )}
-                    </div>
+                      </>
+                    )}
                   </>
                 )}
               </div>
