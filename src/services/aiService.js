@@ -1,44 +1,40 @@
 ﻿// src/services/aiService.js
 
-/**
- * Calls the Google Gemini API to generate content based on a prompt.
- * @param {string} prompt The text prompt to send to the AI model.
- * @returns {Promise<string>} A promise that resolves with the AI-generated text response.
- * @throws {Error} If the API call fails or returns an unexpected response.
- */
-export async function callGeminiApi(prompt) {
-    const payload = { contents: [{ role: "user", parts: [{ text: prompt }] }] };
-    // For local development, use your Gemini API key from environment variables.
-    // Make sure you have REACT_APP_GEMINI_API_KEY defined in your .env file.
-    const apiKey = process.env.REACT_APP_GEMINI_API_KEY; // <--- IMPORTANT CHANGE HERE
-    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+// This function will now make a web request to our new backend.
+// It accepts the full conversation history, feature ID, and language.
+export const callGeminiApi = async (conversation, featureId = 'askAI', language = 'English') => {
+  // We'll use the 'fetch' API to send a request to our new backend server.
+  try {
+    const response = await fetch('http://127.0.0.1:5000/api/generate', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      // We send the entire conversation, featureId, and language to the backend.
+      // The backend will use these to construct the full prompt including system instructions.
+      body: JSON.stringify({
+        conversation: conversation, // Pass the full conversation array
+        featureId: featureId,
+        language: language
+      }),
+    });
 
-    try {
-        const response = await fetch(apiUrl, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
-        });
-
-        if (!response.ok) {
-            const errorData = await response.json();
-            console.error("API Error Response:", errorData);
-            // Propagate the specific error message from the API for better debugging
-            throw new Error(`API request failed with status ${response.status}: ${errorData.error.message || 'Unknown error'}`);
-        }
-
-        const result = await response.json();
-
-        if (result.candidates && result.candidates.length > 0 &&
-            result.candidates[0].content && result.candidates[0].content.parts &&
-            result.candidates[0].content.parts.length > 0) {
-            return result.candidates[0].content.parts[0].text;
-        } else {
-            console.error("Unexpected AI response structure:", result);
-            throw new Error("Unexpected response structure from AI. Please try again.");
-        }
-    } catch (error) {
-        console.error("Error calling Gemini API:", error);
-        throw new Error(`Could not generate content: ${error.message}`);
+    // Check if the server's response was successful
+    if (!response.ok) {
+      // If the server sends an error, we'll throw an error here.
+      const errorData = await response.json();
+      throw new Error(errorData.error || 'Something went wrong on the server.');
     }
-}
+
+    // The server will send back a JSON response. We parse it here.
+    const data = await response.json();
+    
+    // The final response from our AI agent is in the 'response' field of the JSON.
+    return data.response;
+
+  } catch (error) {
+    console.error('Error calling AI service:', error);
+    // Return a user-friendly error message if something goes wrong.
+    throw new Error("I'm sorry, I'm having trouble with that request. Please try again in a moment.");
+  }
+};
