@@ -1,0 +1,8 @@
+Flask
+flask-cors
+google-generativeai
+langchain-google-genai # <-- ADD THIS LINE
+gunicorn
+python-dotenv # Required for load_dotenv()
+langchain-core # Required for LangChain_core imports
+langgraph # Required for LangGraph

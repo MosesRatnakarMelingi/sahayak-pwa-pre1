@@ -2,10 +2,14 @@
 
 // This function will now make a web request to our new backend.
 // It accepts the full conversation history, feature ID, and language.
+
+// IMPORTANT: This URL points to your deployed Flask backend on Google Cloud Run.
+const FLASK_BACKEND_URL = "https://sahayak-backend-480080327621.asia-south1.run.app"; // <-- UPDATED THIS URL TO YOUR DEPLOYED BACKEND
+
 export const callGeminiApi = async (conversation, featureId = 'askAI', language = 'English') => {
   // We'll use the 'fetch' API to send a request to our new backend server.
   try {
-    const response = await fetch('http://127.0.0.1:5000/api/generate', {
+    const response = await fetch(`${FLASK_BACKEND_URL}/api/generate`, { // Call your Flask backend
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

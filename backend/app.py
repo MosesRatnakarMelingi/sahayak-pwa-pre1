@@ -10,7 +10,9 @@ from typing import TypedDict, List
 # --- Step 1: Set up the Flask Web Server ---
 load_dotenv()
 app = Flask(__name__)
-CORS(app)
+# IMPORTANT: Configure CORS with your actual Firebase Hosting URL
+# origins=["https://sahayak-pwa-prep1.web.app", "https://your-custom-domain.com"]
+CORS(app, resources={r"/api/*": {"origins": "https://sahayak-pwa-prep1.web.app"}})
 
 # --- Define System Prompts (Language-Agnostic Core Persona and Rules) ---
 # These prompts define the core behavior and rules for each feature.
@@ -80,7 +82,7 @@ def call_llm(state: AgentState):
     """Node to call the Gemini LLM with full message history and dynamic system prompt."""
     llm = ChatGoogleGenerativeAI(
         model="gemini-2.0-flash",
-        google_api_key=os.getenv("GOOGLE_API_KEY")
+        google_api_key=os.getenv("GEMINI_API_KEY") # <-- CHANGED THIS LINE
     )
     
     # The actual conversation history (HumanMessage/AIMessage objects)
@@ -149,4 +151,5 @@ def generate_response():
         return jsonify({'error': str(e)}), 500
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    # Use the PORT environment variable provided by Cloud Run, defaulting to 5000 for local dev
+    app.run(debug=True, host="0.0.0.0", port=int(os.environ.get("PORT", 5000))) # <-- CHANGED THIS LINE
