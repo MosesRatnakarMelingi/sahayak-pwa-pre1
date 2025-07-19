@@ -23,7 +23,7 @@ export async function callGeminiApi(prompt) {
         if (!response.ok) {
             const errorData = await response.json();
             console.error("API Error Response:", errorData);
-            // Propagate the specific error message from the API for better debugging
+            // Propagate the specific error message from the API for better debugging etst
             throw new Error(`API request failed with status ${response.status}: ${errorData.error.message || 'Unknown error'}`);
         }
 
