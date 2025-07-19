@@ -6,7 +6,7 @@ import ReactMarkdown from 'react-markdown'; // Import ReactMarkdown
 import remarkGfm from 'remark-gfm'; // Import remark-gfm for GitHub Flavored Markdown
 
 // Import constants from the new config.js file
-import { languageOptions, featureCards, featureTranslations, viewContentTranslations } from './config';
+import { languageOptions, featureCards, featureTranslations, viewContentTranslations, aiModes } from './config';
 
 // Import the new AI service function
 import { callGeminiApi } from './services/aiService';
@@ -19,7 +19,13 @@ function App() {
   const [loading, setLoading] = useState(false);
   const [lastSubmittedPrompt, setLastSubmittedPrompt] = useState(''); // State to store the query
 
-  const [currentView, setCurrentView] = useState('dashboard');
+  // Changed from currentView to currentFeature to better reflect the top-level navigation
+  const [currentFeature, setCurrentFeature] = useState('dashboard');
+  // New state to manage the selected AI mode within the combined AI Assistant feature
+  const [currentAiMode, setCurrentAiMode] = useState('askAI'); // Default to AskAI
+
+  // State for custom messages (replaces alert())
+  const [message, setMessage] = useState({ text: '', type: '' }); // type: 'success', 'error', 'info'
 
   // Language States
   const [selectedLanguage, setSelectedLanguage] = useState(() => {
@@ -43,7 +49,8 @@ function App() {
         setAiResponse('');
         setPrompt('');
         setLastSubmittedPrompt(''); // Clear last submitted prompt on sign out
-        setCurrentView('dashboard'); // Go to dashboard on sign out
+        setCurrentFeature('dashboard'); // Go to dashboard on sign out
+        setCurrentAiMode('askAI'); // Reset AI mode
         setSelectedLanguage('English'); // Reset to default English
         localStorage.removeItem('userLanguage');
         setShowLanguageSetup(false); // Ensure language setup is not shown if logged out
@@ -88,6 +95,15 @@ function App() {
     };
   }, []);
 
+  // Custom message display function
+  const showMessage = (text, type = 'info') => {
+    setMessage({ text, type });
+    const timer = setTimeout(() => {
+      setMessage({ text: '', type: '' });
+    }, 3000); // Message disappears after 3 seconds
+    return () => clearTimeout(timer);
+  };
+
   const handleGoogleSignIn = async () => {
     const provider = new GoogleAuthProvider();
     try {
@@ -95,7 +111,7 @@ function App() {
       // Language setup will be handled by the useEffect after user state updates
     } catch (error) {
       console.error("Error signing in with Google:", error);
-      alert("Error signing in. Please try again.");
+      showMessage("Error signing in. Please try again.", 'error');
     }
   };
 
@@ -104,7 +120,7 @@ function App() {
       await signOut(auth);
     } catch (error) {
       console.error("Error signing out:", error);
-      alert("Error signing out. Please try again.");
+      showMessage("Error signing out. Please try again.", 'error');
     }
   };
 
@@ -121,17 +137,17 @@ function App() {
     if (aiResponse) {
       try {
         await navigator.clipboard.writeText(aiResponse);
-        alert(currentViewTexts.copySuccess);
+        showMessage(currentViewTexts.copySuccess, 'success');
       } catch (err) {
         console.error('Failed to copy text: ', err);
-        alert('Failed to copy. Your browser might not support automatic clipboard access, or you denied permission.');
+        showMessage(currentViewTexts.copyFailed, 'error');
       }
     }
   };
 
   const handleGenerateContent = async () => {
     if (!prompt.trim()) {
-      alert('Please enter your query!');
+      showMessage(currentViewTexts.enterQuery, 'info');
       setLoading(false);
       return;
     }
@@ -145,14 +161,15 @@ function App() {
 
     let finalPrompt = ''; // Initialize finalPrompt here
 
-    // Handle 'under development' features
-    if (['artify', 'adaptify', 'lensAI', 'readify'].includes(currentView)) {
-      setAiResponse(currentViewTexts[`${currentView}UnderDevelopment`]);
+    // Handle 'under development' features (these are now separate from aiAssistant)
+    if (['artify', 'adaptify', 'lensAI', 'readify'].includes(currentFeature)) {
+      setAiResponse(currentViewTexts[`${currentFeature}UnderDevelopment`]);
       setLoading(false);
       return;
     }
 
-    switch (currentView) {
+    // Use currentAiMode for prompt generation
+    switch (currentAiMode) {
       case 'askAI':
         finalPrompt = `Respond in ${selectedLanguage} and start the response DIRECTLY with the answer to the query, with no introductory phrases, greetings, or conversational setups:
         The responses are designed to assist teachers working with school-aged children (ages 6–15) in India. Each response should be framed in a way that helps the teacher present the information in a relatable, engaging, and age-appropriate manner. The tone should be friendly and conversational, but not roleplay as a character or speak directly as the teacher or child.
@@ -225,7 +242,7 @@ function App() {
         Query: "${currentPromptValue}"`;
         break;
       default:
-        alert("Please select an option from the home screen.");
+        showMessage("Please select an AI mode from the options.", 'info');
         setLoading(false);
         return;
     }
@@ -235,7 +252,7 @@ function App() {
       setAiResponse(text);
     } catch (error) {
       console.error("Error generating content:", error);
-      setAiResponse("Error: " + error.message);
+      showMessage(`Error: ${error.message}`, 'error');
     } finally {
       setLoading(false);
     }
@@ -249,6 +266,12 @@ function App() {
 
   const handlePromptChange = (e) => {
     setPrompt(e.target.value);
+  };
+
+  // Function to get the current placeholder text based on selected AI mode
+  const getCurrentPlaceholder = () => {
+    const mode = aiModes.find(mode => mode.id === currentAiMode);
+    return mode ? currentViewTexts[mode.placeholderKey] : '';
   };
 
   return (
@@ -320,23 +343,37 @@ function App() {
       </header>
 
       <main className="main-content">
+        {/* Custom Message Display */}
+        {message.text && (
+          <div className={`message-display ${message.type}`}>
+            {message.text}
+          </div>
+        )}
+
         {user ? (
           <>
-            {currentView === 'dashboard' ? (
+            {currentFeature === 'dashboard' ? (
               <div className="dashboard-view">
                 <h2 className="dashboard-title">{currentViewTexts.dashboardTitle}</h2>
                 <div className="feature-cards-grid">
                   {featureCards.map((card) => {
                     const icon = card.icon;
                     const featureData = featureTranslations[selectedLanguage]?.[card.id] || card;
-                    // Corrected: Check card.id instead of currentView
+                    // Check card.id for under development features
                     const isUnderDevelopment = ['artify', 'adaptify', 'lensAI', 'readify'].includes(card.id);
 
                     return (
                       <button
                         key={card.id}
-                        onClick={() => setCurrentView(card.id)}
+                        onClick={() => {
+                          setCurrentFeature(card.id);
+                          // If it's the AI Assistant, set default mode
+                          if (card.id === 'aiAssistant') {
+                            setCurrentAiMode('askAI');
+                          }
+                        }}
                         className={`feature-card ${isUnderDevelopment ? 'under-development' : ''}`}
+                        disabled={isUnderDevelopment} // Disable clicking under development cards
                       >
                         <span className="feature-card-icon">{icon}</span>
                         <h3>{featureData.name || featureData.title || card.id}</h3>
@@ -355,8 +392,8 @@ function App() {
               <div className="feature-view-container">
                 <button
                   onClick={() => {
-                    setCurrentView('dashboard');
-                    handleClear();
+                    setCurrentFeature('dashboard');
+                    handleClear(); // Clear input/response when going back to dashboard
                   }}
                   className="back-button"
                 >
@@ -364,29 +401,38 @@ function App() {
                 </button>
 
                 <h2 className="feature-view-title">
-                  {currentViewTexts[`${currentView}Title`] || featureTranslations[selectedLanguage]?.[currentView]?.name || currentView}
+                  {currentViewTexts[`${currentFeature}Title`] || featureTranslations[selectedLanguage]?.[currentFeature]?.name || currentFeature}
                 </h2>
 
-                {['artify', 'adaptify', 'lensAI', 'readify'].includes(currentView) ? (
+                {/* Conditional rendering for "Under Development" features */}
+                {['artify', 'adaptify', 'lensAI', 'readify'].includes(currentFeature) ? (
                   <div className="under-development-message">
-                    <p>{currentViewTexts[`${currentView}UnderDevelopment`]}</p>
+                    <p>{currentViewTexts[`${currentFeature}UnderDevelopment`]}</p>
                   </div>
                 ) : (
+                  // This block renders the combined AI Assistant feature
                   <>
+                    {/* AI Mode Selector */}
+                    <div className="ai-mode-selector">
+                      {aiModes.map((mode) => (
+                        <button
+                          key={mode.id}
+                          onClick={() => {
+                            setCurrentAiMode(mode.id);
+                            handleClear(); // Clear input/response when changing mode
+                          }}
+                          className={`mode-button ${currentAiMode === mode.id ? 'selected' : ''}`}
+                          title={featureTranslations[selectedLanguage]?.[mode.id]?.description || mode.description}
+                        >
+                          {mode.icon} {featureTranslations[selectedLanguage]?.[mode.id]?.name || mode.name}
+                        </button>
+                      ))}
+                    </div>
+
                     <div className="input-field-container">
                       <textarea
                         className="text-input"
-                        placeholder={
-                          currentView === 'askAI'
-                            ? currentViewTexts.askAIPlaceholder
-                            : currentView === 'storyfy'
-                              ? currentViewTexts.storyfyPlaceholder
-                              : currentView === 'explainify'
-                                ? currentViewTexts.explainifyPlaceholder
-                                : currentView === 'gamify'
-                                  ? currentViewTexts.gamifyPlaceholder
-                                  : ''
-                        }
+                        placeholder={getCurrentPlaceholder()} // Dynamic placeholder
                         value={prompt}
                         onChange={handlePromptChange}
                         disabled={loading}

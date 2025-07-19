@@ -471,16 +471,34 @@ body {
   100% { transform: rotate(360deg); }
 }
 
-/* Error Message */
-.error-message {
-  color: #dc3545;
-  background-color: #f8d7da;
-  border: 1px solid #f5c6cb;
+/* Error Message (now used for all message types) */
+.message-display {
   padding: 10px;
   border-radius: 8px;
   text-align: center;
-  margin-top: 20px;
+  margin-bottom: 20px; /* Space below the message */
+  font-weight: 500;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
 }
+
+.message-display.error {
+  color: #dc3545;
+  background-color: #f8d7da;
+  border: 1px solid #f5c6cb;
+}
+
+.message-display.success {
+  color: #28a745;
+  background-color: #d4edda;
+  border: 1px solid #c3e6cb;
+}
+
+.message-display.info {
+  color: #007bff;
+  background-color: #e0f2f7;
+  border: 1px solid #b8daff;
+}
+
 
 /* Language Setup Modal */
 .language-setup-modal {
@@ -590,6 +608,50 @@ body {
     /* This max-height ensures it scrolls and doesn't push the input off screen */
 }
 
+/* NEW: AI Mode Selector Styles */
+.ai-mode-selector {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 25px;
+  flex-wrap: wrap; /* Allow wrapping on smaller screens */
+  width: 100%; /* Take full width */
+}
+
+.ai-mode-selector .mode-button {
+  background-color: #f0f2f5; /* Light grey background */
+  color: #555;
+  padding: 10px 18px;
+  border: 1px solid #ddd;
+  border-radius: 20px; /* Pill shape */
+  cursor: pointer;
+  font-size: 0.9em;
+  font-weight: 500;
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.ai-mode-selector .mode-button:hover {
+  background-color: #e6e6e6;
+  border-color: #ccc;
+  color: #333;
+}
+
+.ai-mode-selector .mode-button.selected {
+  background-color: #4a90e2; /* Blue for selected mode */
+  color: white;
+  border-color: #4a90e2;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+}
+
+.ai-mode-selector .mode-button.selected:hover {
+  background-color: #3a7bd5; /* Darker blue on hover for selected */
+  border-color: #3a7bd5;
+}
+
 
 /* Media Queries for Responsiveness */
 @media (max-width: 768px) {
@@ -686,5 +748,16 @@ body {
 
   .ai-response-container.chat-scroll-area {
     max-height: calc(100vh - 250px); /* Adjust max-height for mobile */
+  }
+
+  /* NEW: Mobile adjustments for AI Mode Selector */
+  .ai-mode-selector {
+    flex-direction: column; /* Stack buttons vertically on mobile */
+    align-items: center; /* Center them */
+  }
+
+  .ai-mode-selector .mode-button {
+    width: 100%; /* Full width buttons */
+    justify-content: center; /* Center text and icon */
   }
 }
