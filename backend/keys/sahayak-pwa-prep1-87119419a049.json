@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "sahayak-pwa-prep1",
+  "private_key_id": "87119419a04963e0ca20599294b2ccf5edb35a39",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQCHgp/dziyTK/IJ\nECTo3+I9tlMPOSutwCNbeqxH55HScmqrAvsN99nZb1kZ5bTUOh3BedO5NDay7uTv\njFtESolkYU2VvDxezXQnRUwij1wUXRBbfqmw/6b6cILaVTh8kVltxeyzMK0X7ITn\n/JV32y0D/cJIEuiMEMiFspJ0bbKrrczZDJPWvJCMEcpzsqojrSMVhe0bZqIPfe/F\nyr7iTkSs3dWIML0TWx2HnKYM1qbMC3K3+N1GM8xP9foPGrjy9ciIPwSLlcYBtDki\nz4urXLUPkpsUTDz+zQCxKOd9Kb/sJ1GPGNOOSYDXjXr4adte1/VpXrBq5F2HDBSk\n+O9Ycy3LAgMBAAECggEAIGbZAAnY+bXT0Vv1X2ONLtFmSekTKyAatDiAck8KPKZU\nICD908i0Y/vuc7VLyEU/MTCGsi2seJuLzUWj2w/xizmC+i9AxjBdOjilLExYKZxZ\nGW+Pdr2ieRanCzq+X3bHyeo+H1ifwu0wmGH6gWa8fExUhLRUu40VzXY187X5N3hl\nwdn+/9+wJ6OgvvxF64uaR5libhAsIj0L+tRFr8hVv5Ny05kE+7v7Rd0Fcf18VwQq\nRv5beDolwhEQopQ+e67pvZ1AUncyzg54AkY+WJZxeUN2DuVjiNT+9frOa07L9hxO\nLKZFrG8CkNLZoutm9uxBFoUIvPdr0bQGGISMrjJNlQKBgQC9bsoVJGaFNxqP7Nvg\nvZ/tRNNqAtBYv+st4xAM0WmeKqjqSTzMxsId56m6YKi0CZIR5QLCKGRWu5I7UEHx\nyB80MwM92q82QlM2WsueoqZzL+ZpcAXfGStZL427KSNfYv2ypsRW7I7+TxlZfGzh\nwW1k8IOWJ6Zwlc2ZNvFQw0dB1wKBgQC3IQLgB/wk+YjHp7+ZRC16PscURUP42OLc\nBqYiy2wSHCZbSd4+GOjmXwgDmNrIRMHPJDEpp4yP1kLQ09t/OybdtSL6fYOZY9uZ\nLbz3d7SACeMUPQu8idpYWTfXVgn3ekzcptzXe8J7ab4WIl/DadrcW8ZohbZUGtjr\n/srrENrdLQKBgGPbahV5Cb4BjTP/ZOz0qMBXfqascw3FpYCb6FMJdQaWcFKIZs9/\nmsZO327LE0NMpD5gnXKh/jqmR/CSXyDIIILQvU224JPWpKzLcfjevqWLw4cjMUUo\nrGwoICtgBTB8K0YomOlFbB9srO06JN9gqn0COCtIHXnNzgKNLuom9oIjAoGBAK39\n3Fh03blXqQBhPiZl43uhR87XnKRDlQ+N9a1bbxupyTu07EY9rpKqudeJFF1xDl87\nuMYl3eQPo737fDHfRqchYdFzDWTgvpVEIqVRA5sfSbRB5/PDWkPUyLx8j82lUn/W\nvj6x5G8TYbpwAGKPIZV6UQGgAULZmz5l/+/lPL0lAoGBAJdtFDkJpG0mvb68apXi\nymAMrZyXatnGQ/n1+f8VrKeCLXj/rpQF4HRBJUR/lFfBggGoHtQnj2fhSks5/JfQ\nL1A58NFBuAXt4rEuPARPDfi+gcH4qFPhh0tzGAx/ODXlx8yrrllArPy4VvfRg/qi\nGrQ5qrUOqp8DVzbRvB/6AhVc\n-----END PRIVATE KEY-----\n",
+  "client_email": "sahayak-backend-service@sahayak-pwa-prep1.iam.gserviceaccount.com",
+  "client_id": "110303822899550259477",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/sahayak-backend-service%40sahayak-pwa-prep1.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}
