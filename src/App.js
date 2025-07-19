@@ -15,9 +15,11 @@ import { callGeminiApi } from './services/aiService';
 function App() {
   const [user, setUser] = useState(null);
   const [prompt, setPrompt] = useState('');
-  const [aiResponse, setAiResponse] = useState('');
   const [loading, setLoading] = useState(false);
-  const [lastSubmittedPrompt, setLastSubmittedPrompt] = useState(''); // State to store the query
+
+  // New state to store conversation history for all features/modes
+  // Structure: { 'featureId_or_aiModeId': [{ role: 'user', parts: [{ text: '...' }] }, { role: 'model', parts: [{ text: '...' }] }], ... }
+  const [allConversations, setAllConversations] = useState({});
 
   // Changed from currentView to currentFeature to better reflect the top-level navigation
   const [currentFeature, setCurrentFeature] = useState('dashboard');
@@ -39,6 +41,17 @@ function App() {
   const currentViewTexts = viewContentTranslations[selectedLanguage] || viewContentTranslations['English'];
   const currentFeatureTranslations = featureTranslations[selectedLanguage] || featureTranslations['English'];
 
+  // Determine the active conversation key (feature ID or AI mode ID)
+  const getActiveConversationKey = () => {
+    if (currentFeature === 'aiAssistant') {
+      return currentAiMode;
+    }
+    return currentFeature;
+  };
+
+  // Get the current conversation history for the active feature/mode
+  const currentConversationHistory = allConversations[getActiveConversationKey()] || [];
+
 
   // 1. Effect for Authentication State Changes
   useEffect(() => {
@@ -46,9 +59,8 @@ function App() {
       setUser(currentUser);
       // If user logs out, reset relevant states
       if (!currentUser) {
-        setAiResponse('');
+        setAllConversations({}); // Clear all conversations on sign out
         setPrompt('');
-        setLastSubmittedPrompt(''); // Clear last submitted prompt on sign out
         setCurrentFeature('dashboard'); // Go to dashboard on sign out
         setCurrentAiMode('askAI'); // Reset AI mode
         setSelectedLanguage('English'); // Reset to default English
@@ -133,10 +145,10 @@ function App() {
   };
 
   // Clipboard handler using navigator.clipboard.writeText
-  const handleCopyResponse = async () => {
-    if (aiResponse) {
+  const handleCopyResponse = async (textToCopy) => {
+    if (textToCopy) {
       try {
-        await navigator.clipboard.writeText(aiResponse);
+        await navigator.clipboard.writeText(textToCopy);
         showMessage(currentViewTexts.copySuccess, 'success');
       } catch (err) {
         console.error('Failed to copy text: ', err);
@@ -152,29 +164,34 @@ function App() {
       return;
     }
     setLoading(true);
-    setAiResponse(''); // Clear response at the start of new generation
 
-    // Capture the current prompt value BEFORE clearing the input field
-    const currentPromptValue = prompt;
-    setLastSubmittedPrompt(currentPromptValue); // Set this for display later
-    setPrompt(''); // Clear the prompt text area
+    const activeKey = getActiveConversationKey();
+    let currentChatHistory = [...(allConversations[activeKey] || [])]; // Create a mutable copy
 
-    let finalPrompt = ''; // Initialize finalPrompt here
+    // Add user's message to history
+    const userMessage = { role: 'user', parts: [{ text: prompt }] };
+    currentChatHistory.push(userMessage);
 
-    // Handle 'under development' features (these are now separate from aiAssistant)
-    // SkillPlay is now an active feature, so it's removed from this list.
+    // Clear the prompt input field immediately
+    setPrompt('');
+
+    let initialInstruction = ''; // This will hold the system instruction for the first turn
+
+    // Handle 'under development' features
     if (['adaptify', 'lensAI', 'readify'].includes(currentFeature)) {
-      setAiResponse(currentViewTexts[`${currentFeature}UnderDevelopment`]);
+      setAllConversations(prev => ({
+        ...prev,
+        [activeKey]: [...currentChatHistory, { role: 'model', parts: [{ text: currentViewTexts[`${currentFeature}UnderDevelopment`] }] }]
+      }));
       setLoading(false);
       return;
     }
 
-    // Determine the prompt based on the current feature or selected AI mode
+    // Determine the initial instruction based on the current feature or selected AI mode
     if (currentFeature === 'aiAssistant') {
-      // Use currentAiMode for prompt generation when inside AI Assistant
       switch (currentAiMode) {
         case 'askAI':
-          finalPrompt = `Respond in ${selectedLanguage} and start the response DIRECTLY with the answer to the query, with no introductory phrases, greetings, or conversational setups:
+          initialInstruction = `Respond in ${selectedLanguage} and start the response DIRECTLY with the answer to the query, with no introductory phrases, greetings, or conversational setups:
           The responses are designed to assist teachers working with school-aged children (ages 6–15) in India. Each response should be framed in a way that helps the teacher present the information in a relatable, engaging, and age-appropriate manner. The tone should be friendly and conversational, but not roleplay as a character or speak directly as the teacher or child.
           You are Sahayak, a friendly and informative teaching assistant created for educators in India. Your role is to help school children (aged 15 and under) learn in a way that is:
           - Factually correct and clear
@@ -189,10 +206,10 @@ function App() {
           - Use age-appropriate language with no jargon
           - Keep explanations concise and focused
           - Prioritize India-centric facts unless another country is mentioned by name
-          Query: "${currentPromptValue}"`;
+          Query: `; // Add "Query: " to the instruction
           break;
         case 'storyfy':
-          finalPrompt = `Respond in ${selectedLanguage} and start the response DIRECTLY with the story/answer, with no introductory phrases, greetings, or conversational setups:
+          initialInstruction = `Respond in ${selectedLanguage} and start the response DIRECTLY with the story/answer, with no introductory phrases, greetings, or conversational setups:
           Core Guidelines (Must-Haves):
           The response is meant to assist teachers working with school-aged children (ages 6–15) in India.
           Frame the response as a resource teachers can use — never roleplay as the teacher or student.
@@ -207,11 +224,10 @@ function App() {
           - Keep the story moderately short — just long enough to deliver the message without becoming too elaborate
           - Encourage imagination through everyday examples familiar to Indian children
           - Avoid long, elaborate plots or multiple sub-scenes; focus on clarity and engagement
-
-          "${currentPromptValue}"`;
+          Query: `;
           break;
         case 'explainify':
-          finalPrompt = `Respond in ${selectedLanguage} and start the response DIRECTLY with the explanation/answer, with no introductory phrases, greetings, or conversational setups:
+          initialInstruction = `Respond in ${selectedLanguage} and start the response DIRECTLY with the explanation/answer, with no introductory phrases, greetings, or conversational setups:
           You are explaining concepts to a school-aged child (between 6–15 years old) in India. Your job is to make the explanation:
           The responses are designed to assist teachers working with school-aged children (ages 6–15) in India. Each response should be framed in a way that helps the teacher present the information in a relatable, engaging, and age-appropriate manner. The tone should be friendly and conversational, but not roleplay as a character or speak directly as the teacher or child.
           Core Requirements:
@@ -225,11 +241,10 @@ function App() {
           - Do not use more than one analogy or complicate it with comparisons
           - Begin with a direct, clear explanation of the concept before introducing the analogy
           - Keep the response moderately brief — long enough to explain, short enough to stay engaging
-          "${currentPromptValue}"`;
-
+          Query: `;
           break;
         case 'gamify':
-          finalPrompt = `Respond in ${selectedLanguage} and start the response DIRECTLY with the game/quiz instructions or content, with no introductory phrases, greetings, or conversational setups.
+          initialInstruction = `Respond in ${selectedLanguage} and start the response DIRECTLY with the game/quiz instructions or content, with no introductory phrases, greetings, or conversational setups.
           Generate a simple, interactive text-based game or quiz. The *entire content* of this game/quiz (including themes, questions, and answers) *must be directly and exclusively based on the following query*. Do NOT introduce any other topics or generic game themes (e.g., "Amazing Animals of India" or "India Explorer") unless the query explicitly asks for them. The game should be a direct application of the knowledge from the query. The game is meant to assist teachers working with school-aged children (ages 6–15) in India. Responses should be framed as resources for the teacher to present in a fun, engaging way — not interactive instructions for children to respond to directly.
           Core Requirements:
           - Use easy-to-understand language without technical or complex words
@@ -242,7 +257,7 @@ function App() {
           - Present questions or challenges that are fun, educational, and easy to follow
           - Avoid asking players to input text or choose numbered options — the teacher will run the activity verbally or as a class discussion
           - Keep the game short and engaging enough to complete in one session
-          Query: "${currentPromptValue}"`;
+          Query: `;
           break;
         default:
           showMessage("Please select an AI mode from the options.", 'info');
@@ -250,7 +265,7 @@ function App() {
           return;
       }
     } else if (currentFeature === 'skillPlay') {
-      finalPrompt = `Respond in ${selectedLanguage} and start the response DIRECTLY with the role-play scenario, with no introductory phrases, greetings, or conversational setups:
+      initialInstruction = `Respond in ${selectedLanguage} and start the response DIRECTLY with the role-play scenario, with no introductory phrases, greetings, or conversational setups:
       You are an AI assistant designed to help teachers create engaging role-play scenarios for school-aged children (ages 6-15) in India. The goal is to foster holistic development, including social, emotional, and communication skills, beyond traditional academics.
       Generate a role-play scenario based on the following query. The response should include:
       - **Scenario Title:** A brief, engaging title for the role-play.
@@ -266,8 +281,7 @@ function App() {
       - **Simple Language:** Use clear, simple language suitable for the target age group.
       - **Focus on Skills:** Emphasize life skills, problem-solving, empathy, communication, and collaboration.
       - **Concise:** Keep the overall response moderately brief, focusing on essential elements for a quick and effective role-play session.
-
-      Query: "${currentPromptValue}"`;
+      Query: `; // Add "Query: " to the instruction
     } else {
       // Fallback for any other unexpected feature or if a feature is somehow not handled
       showMessage("This feature is not yet fully implemented or recognized.", 'info');
@@ -276,8 +290,22 @@ function App() {
     }
 
     try {
-      const text = await callGeminiApi(finalPrompt);
-      setAiResponse(text);
+      let resultText;
+      // Pass the initial instruction ONLY if it's the first message in the conversation
+      if (currentChatHistory.length === 1 && currentChatHistory[0].role === 'user') {
+        resultText = await callGeminiApi(currentChatHistory, initialInstruction);
+      } else {
+        resultText = await callGeminiApi(currentChatHistory);
+      }
+
+      // Add model's response to history
+      currentChatHistory.push({ role: 'model', parts: [{ text: resultText }] });
+
+      setAllConversations(prev => ({
+        ...prev,
+        [activeKey]: currentChatHistory
+      }));
+
     } catch (error) {
       console.error("Error generating content:", error);
       showMessage(`Error: ${error.message}`, 'error');
@@ -287,9 +315,13 @@ function App() {
   };
 
   const handleClear = () => {
-    setPrompt('');
-    setAiResponse('');
-    setLastSubmittedPrompt('');
+    const activeKey = getActiveConversationKey();
+    setAllConversations(prev => {
+      const newConversations = { ...prev };
+      delete newConversations[activeKey]; // Remove conversation history for current feature/mode
+      return newConversations;
+    });
+    setPrompt(''); // Clear current input field
   };
 
   const handlePromptChange = (e) => {
@@ -307,6 +339,13 @@ function App() {
     // For other features (adaptify, lensAI, readify), they are still under development
     return '';
   };
+
+  // Effect to reset prompt and load conversation history when feature or AI mode changes
+  useEffect(() => {
+    setPrompt(''); // Clear prompt input when feature/mode changes
+    // The `currentConversationHistory` derived state will automatically update
+    // when `currentFeature` or `currentAiMode` changes, reflecting the history for the new active key.
+  }, [currentFeature, currentAiMode]);
 
 
   return (
@@ -395,7 +434,7 @@ function App() {
                     const icon = card.icon;
                     const featureData = featureTranslations[selectedLanguage]?.[card.id] || card;
                     // Check card.id for under development features
-                    // SkillPlay is now an active feature, removed from this list
+                    // SkillPlay is now an active feature, removed from this list.
                     const isUnderDevelopment = ['adaptify', 'lensAI', 'readify'].includes(card.id);
 
                     return (
@@ -469,6 +508,33 @@ function App() {
                       </div>
                     )}
 
+                    {/* Conversation History Display */}
+                    <div className="conversation-history">
+                      {currentConversationHistory.map((message, index) => (
+                        <div key={index} className={`message-block ${message.role}-message`}>
+                          <div className="message-header">
+                            <span className="message-role">{message.role === 'user' ? 'You' : 'Sahayak'}</span>
+                            {message.role === 'model' && (
+                              <button
+                                onClick={() => handleCopyResponse(message.parts[0].text)}
+                                className="copy-button"
+                                title="Copy to Clipboard"
+                              >
+                                📋
+                              </button>
+                            )}
+                          </div>
+                          <ReactMarkdown remarkPlugins={[remarkGfm]}>{message.parts[0].text}</ReactMarkdown>
+                        </div>
+                      ))}
+                      {loading && (
+                        <div className="message-block model-message loading-message">
+                          <span className="spinner"></span> {currentViewTexts.generating}
+                        </div>
+                      )}
+                    </div>
+
+
                     <div className="input-field-container">
                       <textarea
                         className="text-input"
@@ -501,29 +567,6 @@ function App() {
                         {currentViewTexts.clearButton}
                       </button>
                     </div>
-
-                    {aiResponse && (
-                      <div className="ai-response-container">
-                        {lastSubmittedPrompt && (
-                            <div className="submitted-query">
-                                <h4>{currentViewTexts.yourQueryHeading || 'Your Query:'}</h4>
-                                <p>{lastSubmittedPrompt}</p>
-                            </div>
-                        )}
-                        <h3>
-                          {currentViewTexts.aiResponseHeading}
-                           <button
-                             onClick={handleCopyResponse}
-                             className="copy-button"
-                             title="Copy to Clipboard"
-                           >
-                             📋
-                           </button>
-                        </h3>
-                        {/* Use ReactMarkdown to render the AI response */}
-                        <ReactMarkdown remarkPlugins={[remarkGfm]}>{aiResponse}</ReactMarkdown>
-                      </div>
-                    )}
                   </>
                 )}
               </div>
