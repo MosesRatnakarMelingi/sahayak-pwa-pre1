@@ -162,89 +162,117 @@ function App() {
     let finalPrompt = ''; // Initialize finalPrompt here
 
     // Handle 'under development' features (these are now separate from aiAssistant)
-    if (['artify', 'adaptify', 'lensAI', 'readify'].includes(currentFeature)) {
+    // SkillPlay is now an active feature, so it's removed from this list.
+    if (['adaptify', 'lensAI', 'readify'].includes(currentFeature)) {
       setAiResponse(currentViewTexts[`${currentFeature}UnderDevelopment`]);
       setLoading(false);
       return;
     }
 
-    // Use currentAiMode for prompt generation
-    switch (currentAiMode) {
-      case 'askAI':
-        finalPrompt = `Respond in ${selectedLanguage} and start the response DIRECTLY with the answer to the query, with no introductory phrases, greetings, or conversational setups:
-        The responses are designed to assist teachers working with school-aged children (ages 6–15) in India. Each response should be framed in a way that helps the teacher present the information in a relatable, engaging, and age-appropriate manner. The tone should be friendly and conversational, but not roleplay as a character or speak directly as the teacher or child.
-        You are Sahayak, a friendly and informative teaching assistant created for educators in India. Your role is to help school children (aged 15 and under) learn in a way that is:
-        - Factually correct and clear
-        - Easy to understand and free from technical or complex language
-        - Moderately brief — not too short, not too long
-        - Completely kid-safe — no content related to religion, politics, sensitive, or mature topics
-        Tone and Style Guidelines:
-        - Use a friendly, simple, and conversational tone as if you’re talking directly to children
-        - Always keep an India-first perspective. Respond with Indian context by default. Mention facts about other countries only if explicitly asked.
-        Response Rules:
-        - Provide direct and factual answers
-        - Use age-appropriate language with no jargon
-        - Keep explanations concise and focused
-        - Prioritize India-centric facts unless another country is mentioned by name
-        Query: "${currentPromptValue}"`;
-        break;
-      case 'storyfy':
-        finalPrompt = `Respond in ${selectedLanguage} and start the response DIRECTLY with the story/answer, with no introductory phrases, greetings, or conversational setups:
-        Core Guidelines (Must-Haves):
-        The response is meant to assist teachers working with school-aged children (ages 6–15) in India.
-        Frame the response as a resource teachers can use — never roleplay as the teacher or student.
-        - Use plain, kid-friendly language with no complex or technical terms
-        - Keep content fully appropriate for children — avoid religion, politics, sensitive, or mature topics
-        - Use a warm, conversational tone as if guiding a class
-        - Maintain an India-centric perspective unless another country is explicitly mentioned
-        - Avoid jargon and ensure suitability for children across urban and rural India
-        Storytelling Notes:
-        - The story must explain the concept clearly while being fun and relatable
-        - Use simple characters (like a child, parent, teacher, animal, or object) to guide the story
-        - Keep the story moderately short — just long enough to deliver the message without becoming too elaborate
-        - Encourage imagination through everyday examples familiar to Indian children
-        - Avoid long, elaborate plots or multiple sub-scenes; focus on clarity and engagement
+    // Determine the prompt based on the current feature or selected AI mode
+    if (currentFeature === 'aiAssistant') {
+      // Use currentAiMode for prompt generation when inside AI Assistant
+      switch (currentAiMode) {
+        case 'askAI':
+          finalPrompt = `Respond in ${selectedLanguage} and start the response DIRECTLY with the answer to the query, with no introductory phrases, greetings, or conversational setups:
+          The responses are designed to assist teachers working with school-aged children (ages 6–15) in India. Each response should be framed in a way that helps the teacher present the information in a relatable, engaging, and age-appropriate manner. The tone should be friendly and conversational, but not roleplay as a character or speak directly as the teacher or child.
+          You are Sahayak, a friendly and informative teaching assistant created for educators in India. Your role is to help school children (aged 15 and under) learn in a way that is:
+          - Factually correct and clear
+          - Easy to understand and free from technical or complex language
+          - Moderately brief — not too short, not too long
+          - Completely kid-safe — no content related to religion, politics, sensitive, or mature topics
+          Tone and Style Guidelines:
+          - Use a friendly, simple, and conversational tone as if you’re talking directly to children
+          - Always keep an India-first perspective. Respond with Indian context by default. Mention facts about other countries only if explicitly asked.
+          Response Rules:
+          - Provide direct and factual answers
+          - Use age-appropriate language with no jargon
+          - Keep explanations concise and focused
+          - Prioritize India-centric facts unless another country is mentioned by name
+          Query: "${currentPromptValue}"`;
+          break;
+        case 'storyfy':
+          finalPrompt = `Respond in ${selectedLanguage} and start the response DIRECTLY with the story/answer, with no introductory phrases, greetings, or conversational setups:
+          Core Guidelines (Must-Haves):
+          The response is meant to assist teachers working with school-aged children (ages 6–15) in India.
+          Frame the response as a resource teachers can use — never roleplay as the teacher or student.
+          - Use plain, kid-friendly language with no complex or technical terms
+          - Keep content fully appropriate for children — avoid religion, politics, sensitive, or mature topics
+          - Use a warm, conversational tone as if guiding a class
+          - Maintain an India-centric perspective unless another country is explicitly mentioned
+          - Avoid jargon and ensure suitability for children across urban and rural India
+          Storytelling Notes:
+          - The story must explain the concept clearly while being fun and relatable
+          - Use simple characters (like a child, parent, teacher, animal, or object) to guide the story
+          - Keep the story moderately short — just long enough to deliver the message without becoming too elaborate
+          - Encourage imagination through everyday examples familiar to Indian children
+          - Avoid long, elaborate plots or multiple sub-scenes; focus on clarity and engagement
 
-        "${currentPromptValue}"`;
-        break;
-      case 'explainify':
-        finalPrompt = `Respond in ${selectedLanguage} and start the response DIRECTLY with the explanation/answer, with no introductory phrases, greetings, or conversational setups:
-        You are explaining concepts to a school-aged child (between 6–15 years old) in India. Your job is to make the explanation:
-        The responses are designed to assist teachers working with school-aged children (ages 6–15) in India. Each response should be framed in a way that helps the teacher present the information in a relatable, engaging, and age-appropriate manner. The tone should be friendly and conversational, but not roleplay as a character or speak directly as the teacher or child.
-        Core Requirements:
-        - Very simple, accurate, and easy to understand
-        - Entirely kid-safe — avoid religious, political, sensitive, or mature topics
-        - Free from complex words, technical language, or multiple analogies
-        - Delivered in a warm, conversational tone that feels like talking directly to a child
-        - Focused on the Indian context unless another country is explicitly mentioned
-        Special Instructions:
-        - Include one highly relatable analogy that a child in India would immediately understand
-        - Do not use more than one analogy or complicate it with comparisons
-        - Begin with a direct, clear explanation of the concept before introducing the analogy
-        - Keep the response moderately brief — long enough to explain, short enough to stay engaging
-        "${currentPromptValue}"`;
+          "${currentPromptValue}"`;
+          break;
+        case 'explainify':
+          finalPrompt = `Respond in ${selectedLanguage} and start the response DIRECTLY with the explanation/answer, with no introductory phrases, greetings, or conversational setups:
+          You are explaining concepts to a school-aged child (between 6–15 years old) in India. Your job is to make the explanation:
+          The responses are designed to assist teachers working with school-aged children (ages 6–15) in India. Each response should be framed in a way that helps the teacher present the information in a relatable, engaging, and age-appropriate manner. The tone should be friendly and conversational, but not roleplay as a character or speak directly as the teacher or child.
+          Core Requirements:
+          - Very simple, accurate, and easy to understand
+          - Entirely kid-safe — avoid religious, political, sensitive, or mature topics
+          - Free from complex words, technical language, or multiple analogies
+          - Delivered in a warm, conversational tone that feels like talking directly to a child
+          - Focused on the Indian context unless another country is explicitly mentioned
+          Special Instructions:
+          - Include one highly relatable analogy that a child in India would immediately understand
+          - Do not use more than one analogy or complicate it with comparisons
+          - Begin with a direct, clear explanation of the concept before introducing the analogy
+          - Keep the response moderately brief — long enough to explain, short enough to stay engaging
+          "${currentPromptValue}"`;
 
-        break;
-      case 'gamify':
-        finalPrompt = `Respond in ${selectedLanguage} and start the response DIRECTLY with the game/quiz instructions or content, with no introductory phrases, greetings, or conversational setups.
-        Generate a simple, interactive text-based game or quiz. The *entire content* of this game/quiz (including themes, questions, and answers) *must be directly and exclusively based on the following query*. Do NOT introduce any other topics or generic game themes (e.g., "Amazing Animals of India" or "India Explorer") unless the query explicitly asks for them. The game should be a direct application of the knowledge from the query. The game is meant to assist teachers working with school-aged children (ages 6–15) in India. Responses should be framed as resources for the teacher to present in a fun, engaging way — not interactive instructions for children to respond to directly.
-        Core Requirements:
-        - Use easy-to-understand language without technical or complex words
-        - Ensure all content is completely kid-safe — no religion, politics, sensitive, or mature themes
-        - Present the game in a friendly, age-appropriate tone suitable for Indian children
-        - Use an India-first perspective by default; mention other countries only if explicitly asked
-        - Avoid jargon and ensure full relevance to children across India
-        Game Structure Instructions:
-        - Begin with clear, simple instructions that help the teacher explain the game to students
-        - Present questions or challenges that are fun, educational, and easy to follow
-        - Avoid asking players to input text or choose numbered options — the teacher will run the activity verbally or as a class discussion
-        - Keep the game short and engaging enough to complete in one session
-        Query: "${currentPromptValue}"`;
-        break;
-      default:
-        showMessage("Please select an AI mode from the options.", 'info');
-        setLoading(false);
-        return;
+          break;
+        case 'gamify':
+          finalPrompt = `Respond in ${selectedLanguage} and start the response DIRECTLY with the game/quiz instructions or content, with no introductory phrases, greetings, or conversational setups.
+          Generate a simple, interactive text-based game or quiz. The *entire content* of this game/quiz (including themes, questions, and answers) *must be directly and exclusively based on the following query*. Do NOT introduce any other topics or generic game themes (e.g., "Amazing Animals of India" or "India Explorer") unless the query explicitly asks for them. The game should be a direct application of the knowledge from the query. The game is meant to assist teachers working with school-aged children (ages 6–15) in India. Responses should be framed as resources for the teacher to present in a fun, engaging way — not interactive instructions for children to respond to directly.
+          Core Requirements:
+          - Use easy-to-understand language without technical or complex words
+          - Ensure all content is completely kid-safe — no religion, politics, sensitive, or mature themes
+          - Present the game in a friendly, age-appropriate tone suitable for Indian children
+          - Use an India-first perspective by default; mention other countries only if explicitly asked
+          - Avoid jargon and ensure full relevance to children across India
+          Game Structure Instructions:
+          - Begin with clear, simple instructions that help the teacher explain the game to students
+          - Present questions or challenges that are fun, educational, and easy to follow
+          - Avoid asking players to input text or choose numbered options — the teacher will run the activity verbally or as a class discussion
+          - Keep the game short and engaging enough to complete in one session
+          Query: "${currentPromptValue}"`;
+          break;
+        default:
+          showMessage("Please select an AI mode from the options.", 'info');
+          setLoading(false);
+          return;
+      }
+    } else if (currentFeature === 'skillPlay') {
+      finalPrompt = `Respond in ${selectedLanguage} and start the response DIRECTLY with the role-play scenario, with no introductory phrases, greetings, or conversational setups:
+      You are an AI assistant designed to help teachers create engaging role-play scenarios for school-aged children (ages 6-15) in India. The goal is to foster holistic development, including social, emotional, and communication skills, beyond traditional academics.
+      Generate a role-play scenario based on the following query. The response should include:
+      - **Scenario Title:** A brief, engaging title for the role-play.
+      - **Objective:** A clear, single-sentence objective for what students should learn or practice.
+      - **Characters:** A list of 2-4 characters with brief descriptions of their roles.
+      - **Setting:** A simple description of where the role-play takes place.
+      - **Dialogue Prompts/Starting Lines:** 3-5 key dialogue prompts or starting lines for each character to kick off the role-play.
+      - **Key Learning Points:** 2-3 bullet points summarizing the skills or lessons students can gain.
+
+      Guidelines:
+      - **Kid-Safe:** Ensure all content is completely appropriate for children; avoid sensitive, religious, or political topics.
+      - **India-Centric:** Scenarios should be relatable to the Indian context and culture by default.
+      - **Simple Language:** Use clear, simple language suitable for the target age group.
+      - **Focus on Skills:** Emphasize life skills, problem-solving, empathy, communication, and collaboration.
+      - **Concise:** Keep the overall response moderately brief, focusing on essential elements for a quick and effective role-play session.
+
+      Query: "${currentPromptValue}"`;
+    } else {
+      // Fallback for any other unexpected feature or if a feature is somehow not handled
+      showMessage("This feature is not yet fully implemented or recognized.", 'info');
+      setLoading(false);
+      return;
     }
 
     try {
@@ -268,11 +296,18 @@ function App() {
     setPrompt(e.target.value);
   };
 
-  // Function to get the current placeholder text based on selected AI mode
+  // Function to get the current placeholder text based on selected AI mode or current feature
   const getCurrentPlaceholder = () => {
-    const mode = aiModes.find(mode => mode.id === currentAiMode);
-    return mode ? currentViewTexts[mode.placeholderKey] : '';
+    if (currentFeature === 'aiAssistant') {
+      const mode = aiModes.find(mode => mode.id === currentAiMode);
+      return mode ? currentViewTexts[mode.placeholderKey] : '';
+    } else if (currentFeature === 'skillPlay') {
+      return currentViewTexts.skillPlayPlaceholder;
+    }
+    // For other features (adaptify, lensAI, readify), they are still under development
+    return '';
   };
+
 
   return (
     <div className="app-container">
@@ -360,7 +395,8 @@ function App() {
                     const icon = card.icon;
                     const featureData = featureTranslations[selectedLanguage]?.[card.id] || card;
                     // Check card.id for under development features
-                    const isUnderDevelopment = ['artify', 'adaptify', 'lensAI', 'readify'].includes(card.id);
+                    // SkillPlay is now an active feature, removed from this list
+                    const isUnderDevelopment = ['adaptify', 'lensAI', 'readify'].includes(card.id);
 
                     return (
                       <button
@@ -401,33 +437,37 @@ function App() {
                 </button>
 
                 <h2 className="feature-view-title">
+                  {/* Display title based on currentFeature, without checking for 'Under Development' here */}
                   {currentViewTexts[`${currentFeature}Title`] || featureTranslations[selectedLanguage]?.[currentFeature]?.name || currentFeature}
                 </h2>
 
                 {/* Conditional rendering for "Under Development" features */}
-                {['artify', 'adaptify', 'lensAI', 'readify'].includes(currentFeature) ? (
+                {/* SkillPlay is now an active feature, removed from this list */}
+                {['adaptify', 'lensAI', 'readify'].includes(currentFeature) ? (
                   <div className="under-development-message">
                     <p>{currentViewTexts[`${currentFeature}UnderDevelopment`]}</p>
                   </div>
                 ) : (
-                  // This block renders the combined AI Assistant feature
+                  // This block renders the combined AI Assistant feature OR SkillPlay
                   <>
-                    {/* AI Mode Selector */}
-                    <div className="ai-mode-selector">
-                      {aiModes.map((mode) => (
-                        <button
-                          key={mode.id}
-                          onClick={() => {
-                            setCurrentAiMode(mode.id);
-                            handleClear(); // Clear input/response when changing mode
-                          }}
-                          className={`mode-button ${currentAiMode === mode.id ? 'selected' : ''}`}
-                          title={featureTranslations[selectedLanguage]?.[mode.id]?.description || mode.description}
-                        >
-                          {mode.icon} {featureTranslations[selectedLanguage]?.[mode.id]?.name || mode.name}
-                        </button>
-                      ))}
-                    </div>
+                    {/* AI Mode Selector - Only show for AI Assistant */}
+                    {currentFeature === 'aiAssistant' && (
+                      <div className="ai-mode-selector">
+                        {aiModes.map((mode) => (
+                          <button
+                            key={mode.id}
+                            onClick={() => {
+                              setCurrentAiMode(mode.id);
+                              handleClear(); // Clear input/response when changing mode
+                            }}
+                            className={`mode-button ${currentAiMode === mode.id ? 'selected' : ''}`}
+                            title={featureTranslations[selectedLanguage]?.[mode.id]?.description || mode.description}
+                          >
+                            {mode.icon} {featureTranslations[selectedLanguage]?.[mode.id]?.name || mode.name}
+                          </button>
+                        ))}
+                      </div>
+                    )}
 
                     <div className="input-field-container">
                       <textarea
